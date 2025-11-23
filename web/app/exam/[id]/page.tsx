@@ -154,8 +154,13 @@ const mockExams: Record<string, Exam> = {
 };
 
 // Add metadata for SEO
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const exam = mockExams[params.id];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const exam = mockExams[id];
 
   if (!exam) {
     return {
@@ -177,10 +182,11 @@ export async function generateStaticParams() {
 export default async function ExamDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   // In production, this would be an async API call
-  const exam = mockExams[params.id];
+  const exam = mockExams[id];
 
   if (!exam) {
     notFound();
@@ -189,7 +195,7 @@ export default async function ExamDetailPage({
   return (
     <div className="flex flex-col gap-6 py-6">
       <ExamDetailCard exam={exam} />
-      <CareerListClient careers={exam.careers || []} examId={params.id} />
+      <CareerListClient careers={exam.careers || []} examId={id} />
     </div>
   );
 }

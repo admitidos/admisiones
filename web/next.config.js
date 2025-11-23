@@ -13,9 +13,6 @@ const nextConfig = {
   // Enable compression
   compress: true,
 
-  // Optimize production bundle
-  swcMinify: true,
-
   // Power optimization features
   experimental: {
     optimizePackageImports: ["@heroui/system", "lucide-react"],
