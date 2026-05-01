@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+/* ── Design tokens ────────────────────────────────────────────── */
 :root {
+  /* Green scale — admitted states, UNMSM brand */
+  --g900: #1a3326;
+  --g700: #155230;
+  --g600: #1c6b3a;
+  --g500: #238a4a;
+  --g400: #39a862;
+  --g200: #c8e8d0;
+  --g100: #dff0e4;
+  --g50:  #eef7f1;
+
+  /* Amber scale — non-admitted, warnings */
+  --a600: #a86b1a;
+  --a500: #cc8c28;
+  --a400: #d9a040;
+  --a100: #f5e8cc;
+  --a50:  #faf4e8;
+
+  /* Surface & layout */
   --background: #ffffff;
-  --foreground: #171717;
+  --surface:    #ffffff;
+  --foreground: #1a1a1a;
+  --muted:      #6b7280;
+  --border:     #e8eaed;
+
+  /* Hero — Degradado índigo (selected theme) */
+  --hero-bg:    linear-gradient(145deg, #1e1b4b 0%, #0f766e 100%);
+  --hero-dim:   rgba(0, 0, 0, 0.25);
+  --hero-sub:   rgba(255, 255, 255, 0.68);
+  --hero-muted: rgba(255, 255, 255, 0.48);
+  --hero-sep:   rgba(255, 255, 255, 0.3);
+  --hero-hi:    rgba(255, 255, 255, 0.13);
+  --hero-na:    #6b3a08;
+
+  /* Primary accent — indigo */
+  --accent:      #4338ca;
+  --accent-dark: #1e1b4b;
+
+  /* Shadows */
+  --shadow:    0 1px 3px rgba(0, 0, 0, 0.07), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
+/* ── Tailwind v4 theme ────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts — mapped from next/font CSS vars */
+  --font-sans:  var(--font-jakarta);
+  --font-serif: var(--font-fraunces);
+
+  /* Colors */
+  --color-background:  var(--background);
+  --color-surface:     var(--surface);
+  --color-foreground:  var(--foreground);
+  --color-muted:       var(--muted);
+  --color-border:      var(--border);
+
+  --color-accent:      var(--accent);
+  --color-accent-dark: var(--accent-dark);
+
+  --color-green-900: var(--g900);
+  --color-green-700: var(--g700);
+  --color-green-600: var(--g600);
+  --color-green-500: var(--g500);
+  --color-green-400: var(--g400);
+  --color-green-200: var(--g200);
+  --color-green-100: var(--g100);
+  --color-green-50:  var(--g50);
+
+  --color-amber-600: var(--a600);
+  --color-amber-500: var(--a500);
+  --color-amber-400: var(--a400);
+  --color-amber-100: var(--a100);
+  --color-amber-50:  var(--a50);
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base styles ──────────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:  var(--background);
+  color:       var(--foreground);
+  font-family: var(--font-sans);
 }
+
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }

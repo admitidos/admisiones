@@ -27,6 +27,9 @@ packages/db/generated/
 apps/scraper/data/
 !apps/scraper/data/.gitkeep
 
+# design reference files (HTML prototypes, not production code)
+apps/web/design-reference/
+
 # misc
 .DS_Store
 *.pem
