@@ -1,0 +1,20 @@
+{
+  "name": "scraper",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "extract:unmsm": "tsx src/extractors/unmsm.ts",
+    "extract:uni": "tsx src/extractors/uni.ts",
+    "seed": "tsx src/loaders/seed.ts",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@admitidos/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

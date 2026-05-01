@@ -1,0 +1,25 @@
+{
+  "name": "admitidos-pe",
+  "private": true,
+  "scripts": {
+    "scrape:unmsm": "pnpm --filter scraper tsx src/extractors/unmsm.ts",
+    "scrape:uni": "pnpm --filter scraper tsx src/extractors/uni.ts",
+    "scrape:all": "pnpm scrape:unmsm && pnpm scrape:uni",
+    "db:seed": "pnpm --filter scraper tsx src/loaders/seed.ts",
+    "db:migrate": "pnpm --filter @admitidos/db prisma migrate dev",
+    "db:studio": "pnpm --filter @admitidos/db prisma studio",
+    "pipeline:unmsm": "pnpm scrape:unmsm && pnpm db:seed",
+    "pipeline:uni": "pnpm scrape:uni && pnpm db:seed",
+    "pipeline:all": "pnpm scrape:all && pnpm db:seed",
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "eslint packages/ apps/scraper/",
+    "format": "prettier --write packages/ apps/scraper/"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.59.1"
+  }
+}

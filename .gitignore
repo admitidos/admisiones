@@ -1,7 +1,33 @@
+# editors
 .vscode
+.idea
+
+# env files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+**/**/*.env
+
+# dependencies
+node_modules
+**/**/node_modules
+.pnpm-store
+
+# build outputs
 .next
+dist
+build
+
+# prisma generated client
+packages/db/generated/
+
+# scraper intermediate data
+apps/scraper/data/
+!apps/scraper/data/.gitkeep
+
+# misc
+.DS_Store
+*.pem
+pnpm-debug.log*

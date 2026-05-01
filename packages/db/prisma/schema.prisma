@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model University {
+  id      String @id @default(cuid())
+  name    String
+  acronym String @unique
+  color   String
+  status  String @default("active") // "active" | "coming_soon"
+
+  @@map("universities")
+}
