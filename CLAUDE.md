@@ -30,7 +30,7 @@ URL pattern: `/[university]/[process]/applicant/[code]`
 
 ## Tech stack
 
-- Framework: Next.js 15, App Router, TypeScript
+- Framework: Next.js 16 (App Router), TypeScript — read `node_modules/next/dist/docs/` before writing Next.js code
 - Styling: Tailwind CSS
 - ORM: Prisma 7 — connection config in `prisma.config.ts`, not in `schema.prisma`
 - DB: PostgreSQL (local and production — no SQLite)
@@ -111,21 +111,73 @@ Business logic (percentiles, reachable programs, cutoff tendency) lives in `feat
 
 ## Design system
 
-Fonts: Fraunces (headlines, numbers, logo) · Plus Jakarta Sans (UI, body)
+**Theme**: Degradado índigo — `linear-gradient(145deg, #1e1b4b → #0f766e)` for the hero.
 
-| Token | Value |
+**Fonts** (self-hosted via `next/font/google`, zero external requests):
+- `font-serif` → Fraunces — headlines, scores, logo
+- `font-sans` → Plus Jakarta Sans — UI, body
+
+**Implementation**: `apps/web/src/app/globals.css` (`:root` CSS vars + Tailwind v4 `@theme inline`) and `apps/web/src/app/layout.tsx` (font loading, `lang="es"`, SEO metadata).
+
+**Tailwind color utilities** (all registered via `@theme inline`):
+
+| Utility | CSS var | Value | Use |
+|---|---|---|---|
+| `bg-background` / `text-foreground` | `--background` / `--foreground` | `#ffffff` / `#1a1a1a` | Page base |
+| `text-muted` | `--muted` | `#6b7280` | Secondary text |
+| `bg-border` / `border-border` | `--border` | `#e8eaed` | Dividers, card borders |
+| `bg-accent` / `text-accent` | `--accent` | `#4338ca` | Primary CTA, active nav |
+| `bg-accent-dark` | `--accent-dark` | `#1e1b4b` | Hover, pressed states |
+| `bg-green-600` | `--g600` | `#1c6b3a` | UNMSM brand, admitted badge bg |
+| `bg-green-500` | `--g500` | `#238a4a` | Admitted text on light |
+| `bg-green-50` | `--g50` | `#eef7f1` | Admitted card background |
+| `bg-amber-600` / `text-amber-600` | `--a600` | `#a86b1a` | Non-admitted score, warnings |
+| `bg-amber-50` | `--a50` | `#faf4e8` | Non-admitted card background |
+
+**Hero gradient** — CSS-var only, not a Tailwind color (gradients can't be colors):
+```css
+background: var(--hero-bg); /* linear-gradient(145deg, #1e1b4b 0%, #0f766e 100%) */
+```
+Use `bg-[var(--hero-bg)]` in Tailwind or inline style for hero sections.
+
+**Border radius** (overrides Tailwind defaults):
+- `rounded-sm` → 8px — buttons, badges, small cards
+- `rounded` → 12px — standard cards
+- `rounded-lg` → 16px — large cards, modals
+
+**Shadows** — CSS-var only (use inline style or `shadow-[var(--shadow)]`):
+- `--shadow` — `0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.06)`
+- `--shadow-lg` — `0 8px 32px rgba(0,0,0,.12)`
+
+**Design reference files**: `apps/web/design-reference/` (gitignored). Contains the HTML prototypes from Claude Design — read before building any new screen.
+
+## Component and screen plan
+
+### Phase 1 screens
+
+| Screen | Route | Key data source |
+|---|---|---|
+| Home | `/` | `getHomeData` — process list + university grid |
+| Process (career table) | `/[uni]/[process]` | `getProcessData` — careers grouped by área |
+| Career applicant list | `/[uni]/[process]/[program]` | program applicants, filterable |
+| Result individual | `/[uni]/[process]/applicant/[code]` | `getResultData` |
+| Upcoming exams | `/examenes` | `getCalendarData` |
+| 404 | `not-found.tsx` | — |
+
+### Storybook candidates
+
+These have meaningful state variations or complex visual logic that warrants isolation:
+
+| Component | Why storybook |
 |---|---|
-| Primary green | #15803D |
-| Background | #F3F4F1 |
-| Surface | #FFFFFF |
-| Text primary | #111827 |
-| Text secondary | #6B7280 |
-| Amber (non-admitted) | #D97706 |
-| Amber dark | #92400E |
-| Success / over cutoff | #16A34A |
-| Cutoff marker | #D97706 |
+| `ScoreHero` | admitted vs. not-admitted; gradient bg; Fraunces score at 64px |
+| `PositionBar` | score marker, cutoff marker, area min/max markers, color zones |
+| `DistributionChart` | interactive SVG: hover tooltip, drag-to-select range, gaussian curve |
+| `CutoffHistoryChart` | 4-process trend; average dashed line; admitted/missed annotations |
+| `AltProgramRow` | "¿Habrías ingresado?" row — advantage/deficit pill, green vs. amber |
+| `StatusBadge` | 4 states: `admitted` / `not_admitted` / `absent` / `disqualified` |
 
-Border radius: cards 18–20px · small cards 10–12px · buttons 10–14px · badges 100px
+Everything else (Navbar, Footer, AreaChip, ModalidadBadge, StatTile, Breadcrumb) is stateless enough to test in context.
 
 ## Key business rules
 
