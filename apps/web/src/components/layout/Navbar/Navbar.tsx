@@ -19,7 +19,7 @@ export function Navbar() {
             href="/procesos"
             className="text-sm font-semibold text-muted transition-colors hover:text-foreground"
           >
-            Procesos
+            Exámenes
           </Link>
           <Link
             href="/proximos-examenes"

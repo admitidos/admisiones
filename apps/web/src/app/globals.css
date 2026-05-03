@@ -26,13 +26,13 @@
   --muted:      #6b7280;
   --border:     #e8eaed;
 
-  /* Hero — Degradado índigo (selected theme) */
+  /* Hero — Degradado índigo */
   --hero-bg:    linear-gradient(145deg, #1e1b4b 0%, #0f766e 100%);
   --hero-dim:   rgba(0, 0, 0, 0.25);
-  --hero-sub:   rgba(255, 255, 255, 0.68);
+  --hero-sub:   rgba(255, 255, 255, 0.72);
   --hero-muted: rgba(255, 255, 255, 0.48);
   --hero-sep:   rgba(255, 255, 255, 0.3);
-  --hero-hi:    rgba(255, 255, 255, 0.13);
+  --hero-hi:    rgba(255, 255, 255, 0.85);
   --hero-na:    #6b3a08;
 
   /* Primary accent — indigo */
