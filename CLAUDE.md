@@ -14,6 +14,31 @@ Main competitor: Ciclero.guru — aggregated stats per program but no individual
 - User-facing copy: Spanish
 - Raw portal values (e.g. "ALCANZO VACANTE"): keep as-is
 
+## Naming convention: Proceso vs Examen
+
+Two distinct contexts — never mix them:
+
+**UI (user-facing copy):** always "Examen", never "Proceso". The target user (17–22 year old applicant) thinks in terms of "el examen de San Marcos", not "el proceso de admisión".
+
+**Code and database:** always "Proceso", never "Examen". A Proceso contains multiple Jornadas (individual exam dates). Calling the top-level entity "Examen" would make a Jornada "an exam within an exam" — ambiguous.
+
+Entities:
+- **Proceso** = the full admission convocatoria (e.g. UNMSM 2026-I)
+- **Jornada** = each individual exam date within that Proceso
+
+| Layer | Rule | Example |
+|---|---|---|
+| Navbar link | "Exámenes" | not "Procesos" |
+| Page titles / card headers | "Examen" or "Resultados del examen" | |
+| URLs | neutral — no word needed | `/unmsm/2026-1` |
+| Prisma model | `Proceso` | unchanged |
+| Function names | `getProceso`, `getProcesoData`, `getHomeData` | unchanged |
+| Folder names | `proceso/` | unchanged |
+| CLAUDE.md / internal docs | "Proceso" | |
+| User-visible string constants | `"examen"` | |
+
+Translation happens at the presentation layer only.
+
 ## Monorepo structure
 
 ```
