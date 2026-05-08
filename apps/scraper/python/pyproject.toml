@@ -1,0 +1,19 @@
+[project]
+name = "admitidos-scraper-tools"
+version = "0.1.0"
+description = "Python tools for the admitidos.pe scraper (PDF/web extraction, YAML generation)"
+authors = [
+    {name = "Jhair Guzman"}
+]
+readme = "README.md"
+requires-python = "^3.13"
+dependencies = [
+    "markitdown[pdf] (>=0.1.5,<0.2.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
