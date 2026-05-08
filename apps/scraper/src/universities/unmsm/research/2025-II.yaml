@@ -1,0 +1,141 @@
+# Research file — UNMSM Proceso de Admisión 2025-II
+# Sources:
+#   [✓] Reglamento de Admisión 2025-II UNMSM.pdf (official, authoritative)
+#   [✓] CSV data: 29,196 rows, 4,260 admitted (scraped from portal)
+
+process_id: "2025-II"
+university: "UNMSM"
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+flags:
+  has_areas: true
+  area_count: 5
+  has_modalities: true               # [✓] All modalities active (A, C, D, E, F, G, J, M, N, O)
+  has_min_score_filter: false        # [✓] Changed from 900 to "puntaje positivo" (score > 0)
+  min_score_threshold: null          # No threshold; any positive score qualifies
+  min_score_hides_from_portal: false # [✓] CSV: 16,025 rows with score < 900 appear in portal
+  has_segunda_opcion: false          # [✓] Not active (confirmed: 0 SEGUNDA OPCIÓN observations in CSV)
+  session_count: 1                   # One exam per applicant
+  is_partial_process: false          # All modalities; second stage of 2025 admission year
+
+portal_modality_codes: ["A", "C", "D", "E", "F", "G", "J", "M", "N", "O"]
+# Note: H (Traslado Interno) and I (Graduados y Titulados) not present in 2025-II CSV
+# They appeared in 2024-II but not in this process
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Source: Art. 33–36 of reglamento, Anexo 5
+# Two distinct exam types per applicant modality
+
+exam_general:
+  applies_to_modalities: ["A"]       # EBR/EBA
+  total_questions: 100
+  duration_hours: 3
+  sections:
+    actitudinal:
+      count: 10
+      no_negative_score: true
+    habilidades:
+      count: 20
+      breakdown:
+        verbal: 10
+        logico_matematica: 10
+    conocimientos:
+      count: 70
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+
+exam_special:
+  applies_to_modalities: ["C", "D", "E", "F", "G", "J", "M", "N", "O"]
+  total_questions: 80
+  duration_hours: 3
+  sections:
+    habilidades:
+      count: 30
+      breakdown:
+        verbal: 15
+        logico_matematica: 15
+    conocimientos:
+      count: 50
+  note: "No actitudinal section in special exam"
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+
+# ── Jornadas ─────────────────────────────────────────────────────────────────
+# Source: Anexo 2 (Cronograma) of reglamento
+jornadas:
+  - date: "2025-03-01"
+    day: "sábado"
+    areas: ["D", "E"]
+    exam_type: "general"
+    area_names:
+      D: "Ciencias Económicas y de la Gestión"
+      E: "Humanidades y Ciencias Jurídicas y Sociales"
+  - date: "2025-03-02"
+    day: "domingo"
+    areas: ["A", "B", "C", "D", "E"]
+    exam_type: "both"
+    note: "General exam for Areas B+C; special exam (todas las áreas) on same day"
+  - date: "2025-03-08"
+    day: "sábado"
+    areas: ["A"]
+    exam_type: "general"
+    note: "Área A excepto Medicina Humana"
+  - date: "2025-03-09"
+    day: "domingo"
+    areas: ["A"]
+    exam_type: "general"
+    note: "Área A — EP Medicina Humana únicamente"
+
+# ── Portal split ──────────────────────────────────────────────────────────────
+# 2025-II had an anomalous split-portal structure (see README for details)
+portal_structure:
+  split: true
+  portals:
+    - url_path: "Website20252GeneralA/"
+      contains: "Área A programs (modality A only, 18 programs)"
+      modality_codes: ["A"]
+    - url_path: "Website20252General/"
+      contains: "Areas B-E programs (modalities A, C, J, M, N, O)"
+      modality_codes: ["A", "C", "J", "M", "N", "O"]
+    - url_path: "Website20252Especial/"
+      contains: "Special modalities (D, E, F, G)"
+      modality_codes: ["D", "E", "F", "G"]
+
+# ── CSV stats ─────────────────────────────────────────────────────────────────
+csv_stats:
+  total_rows: 29196
+  admitted: 4260
+  score_below_900: 16025
+  min_score: 0.0
+  max_score: 1692.25
+  min_admitted_score: 259.0          # Special modality (low competitive pressure)
+  segunda_opcion_rows: 0             # Confirmed absent
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  2025-II is the second (full) stage of the 2025 admission year, covering all
+  modalities. Notable as the last process to use the old HTML portal format.
+
+  Portal split anomaly: unlike 2024-II which had a single portal (Website20242/),
+  2025-II split Area A programs into a separate sub-portal (Website20252GeneralA/).
+  Areas B-E for general modality were in Website20252General/, and special modalities
+  in Website20252Especial/. Scraper handles this with three sequential portal scans
+  that group rows by modality before writing separate CSVs.
+
+  Higher admitted count (4,260) vs. other processes reflects all modalities being
+  active: special modality seats (C, D, E, F, etc.) add hundreds of additional admits
+  beyond the EBR/EBA quota.
+
+  Modalities H (Traslado Interno) and I (Graduados y Titulados) were present in
+  2024-II but did not appear in 2025-II portal results.
+
+  Min score rule changed to "puntaje positivo" (Art. 45 area de calificación): any
+  score above zero qualifies. 641 admitted applicants scored below 900, all from
+  low-competition programs or special modalities with dedicated seats.
+
+  From 2026-I onward, the portal uses a new Base64-encoded format (data-auth attrs).
+  2025-II is the last process using plain-text HTML tables.

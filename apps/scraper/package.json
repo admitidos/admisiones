@@ -5,12 +5,20 @@
   "scripts": {
     "extract:unmsm": "tsx src/extractors/unmsm.ts",
     "extract:uni": "tsx src/extractors/uni.ts",
+    "extract:unmsm:2024-I": "tsx src/universities/unmsm/processes/2024-I.ts",
+    "extract:unmsm:2024-II": "tsx src/universities/unmsm/processes/2024-II.ts",
+    "extract:unmsm:2025-I": "tsx src/universities/unmsm/processes/2025-I.ts",
+    "extract:unmsm:2025-II": "tsx src/universities/unmsm/processes/2025-II.ts",
+    "extract:unmsm:2026-I": "tsx src/universities/unmsm/processes/2026-I.ts",
     "seed": "tsx src/loaders/seed.ts",
+    "check": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@admitidos/db": "workspace:*"
+    "@admitidos/db": "workspace:*",
+    "cheerio": "^1.2.0",
+    "csv-stringify": "^6.7.0"
   },
   "devDependencies": {
     "@types/node": "^20",

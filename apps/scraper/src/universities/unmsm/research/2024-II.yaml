@@ -1,0 +1,147 @@
+# Research file — UNMSM Proceso de Admisión 2024-II
+# Sources:
+#   [✓] Reglamento de Admisión 2024-II UNMSM.pdf (official, authoritative)
+#   [✓] CSV data: 23,359 rows, 2,870 admitted (scraped from portal)
+
+process_id: "2024-II"
+university: "UNMSM"
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+flags:
+  has_areas: true
+  area_count: 5
+  has_modalities: true               # [✓] All modalities active (A, C, D, E, F, G, H, I, J, M, N, O)
+  has_min_score_filter: true         # [✓] Reglamento states "puntaje mínimo = 900 pts"
+  min_score_threshold: 900           # [✓] Enforced ONLY for modality A (EBR/EBA general exam)
+                                     #     Special modalities (D, E, F, H, I) had admitted < 900
+  min_score_hides_from_portal: false # [✓] CSV: 17,545 rows with score < 900 appear in portal
+  has_segunda_opcion: true           # [✓] Reglamento Art. 38: same mechanism as 2024-I
+  session_count: 1                   # One exam per applicant
+  is_partial_process: false          # All modalities; second stage of 2024 admission year
+
+portal_modality_codes: ["A", "C", "D", "E", "F", "G", "H", "I", "J", "M", "N", "O"]
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Two distinct exam types: general (modality A, C) and special (all other modalities)
+# Source: Art. 39–43 of reglamento, Anexo 5
+
+exam_general:
+  applies_to_modalities: ["A"]       # EBR/EBA (modality C = Primeros Puestos also uses general exam)
+  total_questions: 100
+  duration_hours: 3
+  sections:
+    habilidades:
+      count: 30
+      breakdown:
+        verbal: 15                   # "2 textos c/5 preguntas + 1 texto en inglés con 5 preguntas"
+        logico_matematica: 15
+    conocimientos:
+      count: 70
+  note: "No actitudinal section in 2024-II general exam (introduced in 2025-I)"
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+
+exam_special:
+  applies_to_modalities: ["D", "E", "F", "G", "H", "I", "J", "M", "N", "O"]
+  total_questions: 80
+  duration_hours: 3
+  sections:
+    habilidades:
+      count: 30
+      breakdown:
+        verbal: 15
+        logico_matematica: 15
+    conocimientos:
+      count: 50
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+
+# ── Jornadas ─────────────────────────────────────────────────────────────────
+# Source: Anexo 2 (Cronograma) of reglamento
+jornadas:
+  - date: "2024-03-09"
+    day: "sábado"
+    areas: ["D", "E"]
+    exam_type: "general"
+    area_names:
+      D: "Ciencias Económicas y de la Gestión"
+      E: "Humanidades y Ciencias Jurídicas y Sociales"
+  - date: "2024-03-10"
+    day: "domingo"
+    areas: ["A", "B", "C", "D", "E"]
+    exam_type: "both"
+    note: "General exam for Areas B+C; special exam (all areas) on same day"
+  - date: "2024-03-16"
+    day: "sábado"
+    areas: ["A"]
+    exam_type: "general"
+    note: "Área A excepto Medicina Humana"
+  - date: "2024-03-17"
+    day: "domingo"
+    areas: ["A"]
+    exam_type: "general"
+    note: "Área A — EP Medicina Humana únicamente"
+
+# ── Segunda opción details ────────────────────────────────────────────────────
+segunda_opcion:
+  active: true
+  rule: >
+    Same mechanism as 2024-I. Applicants could register for a second EP in the
+    same area. Unfilled vacancies from primera opción assigned to segunda opción
+    applicants in merit order, respecting the 900-pt min score.
+  observation_values:
+    - "ALCANZO VACANTE PRIMERA OPCIÓN"
+    - "ALCANZO VACANTE SEGUNDA OPCIÓN"
+  csv_count: 549
+
+# ── Min score enforcement detail ──────────────────────────────────────────────
+# The 900-pt minimum was enforced differently per modality:
+min_score_by_modality:
+  A:  {admitted: 2630, admitted_below_900: 0,  note: "Filter enforced"}
+  C:  {admitted: 140,  admitted_below_900: 0,  note: "Filter enforced"}
+  D:  {admitted: 29,   admitted_below_900: 16, note: "Special exam — filter NOT enforced"}
+  E:  {admitted: 30,   admitted_below_900: 10, note: "Special exam — filter NOT enforced"}
+  F:  {admitted: 19,   admitted_below_900: 15, note: "Special exam — filter NOT enforced"}
+  G:  {admitted: 0,    admitted_below_900: 0}
+  H:  {admitted: 9,    admitted_below_900: 9,  note: "Special exam — filter NOT enforced"}
+  I:  {admitted: 4,    admitted_below_900: 4,  note: "Special exam — filter NOT enforced"}
+  J:  {admitted: 0,    admitted_below_900: 0}
+  M:  {admitted: 0,    admitted_below_900: 0}
+  N:  {admitted: 2,    admitted_below_900: 0}
+  O:  {admitted: 7,    admitted_below_900: 0}
+
+# ── CSV stats ─────────────────────────────────────────────────────────────────
+csv_stats:
+  total_rows: 23359
+  admitted: 2870
+  score_below_900: 17545
+  min_score: 0.0
+  max_score: 1598.625
+  min_admitted_score: 353.625       # From special modality; modality A min = 900+
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  2024-II is the second (full) stage of the 2024 admission year, covering all
+  modalities. It was the last process to use segunda opción.
+
+  Key structural difference from 2024-I and 2025-I:
+  - The GENERAL exam (modality A) has NO actitudinal section: 30H + 70C = 100
+    (2024-I had 25H + 65C + 10A, and 2025-I+ reverted to 3 sections with actitudinal)
+  - The SPECIAL exam is 80 questions (30H + 50C), not 100
+
+  The 900-pt minimum applied only to the general exam (modalities A and C). Special
+  modality applicants (D, E, F, H, I) could be admitted with scores far below 900
+  because the special exam is structurally different — its max score is 80 × 20 = 1,600
+  points and competitive pressure is lower (dedicated seats, no merit competition
+  against EBR/EBA applicants).
+
+  2024-II was the last process to have segunda opción: 549 rows show SEGUNDA OPCIÓN
+  observation. Starting from 2025-I, applicants can only register for ONE EP per
+  Art. 14 of the new reglamento.
+
+  Portal used the old HTML format (plain-text <td> cells, no Base64 encoding).
+  Special modalities discovered dynamically from Website20242/ root.

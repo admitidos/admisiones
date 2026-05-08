@@ -1,0 +1,116 @@
+# Research file — UNMSM Proceso de Admisión 2024-I
+# Sources:
+#   [✓] Reglamento de Admisión 2024-I UNMSM.pdf (official, authoritative)
+#   [✓] CSV data: 28,862 rows, 2,124 admitted (scraped from portal)
+
+process_id: "2024-I"
+university: "UNMSM"
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+flags:
+  has_areas: true
+  area_count: 5
+  has_modalities: false              # [✓] Only EBR/EBA; no special modalities in portal (CSV: only modality A)
+  has_min_score_filter: true         # [✓] Art. 33: "puntaje mínimo para alcanzar vacante = 900 pts"
+  min_score_threshold: 900           # [✓] Strictly enforced: min admitted score in CSV = 900.875
+  min_score_hides_from_portal: false # [✓] CSV: 23,763 rows with score < 900 appear in portal
+  has_segunda_opcion: true           # [✓] Art. 23: applicants could register for 2 EPs in same area
+  session_count: 1                   # One exam per applicant
+  is_partial_process: true           # [✓] Art. 3: first stage of 2024 (2024-II covers remaining modalities)
+                                     # 2024-I reglamento does not explicitly list which modalities,
+                                     # but CSV confirms only modality A was published
+
+portal_modality_codes: ["A"]
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Source: Art. 28–29 of reglamento, Anexo 5
+exam:
+  name: "Prueba DECO®"
+  total_questions: 100
+  duration_hours: 3
+
+  sections:
+    habilidades:
+      count: 25
+      breakdown:
+        verbal: 13                   # "2 textos en castellano (5 preguntas c/u) + 1 texto en inglés (3)"
+        logico_matematica: 12
+    conocimientos:
+      count: 65
+    actitudinal:
+      count: 10
+      no_negative_score: false       # Not explicitly stated in this reglamento (added in 2025-I)
+
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+
+  # Note: actitudinal no-negative rule was NOT explicit in 2024-I reglamento.
+  # Confirmed by structural comparison: 2025-I first explicitly stated it (Décima Octava disposición).
+
+# ── Jornadas ─────────────────────────────────────────────────────────────────
+# Source: Anexo 2 (Cronograma) of reglamento
+jornadas:
+  - date: "2023-12-02"
+    day: "sábado"
+    areas: ["D", "E"]
+    area_names:
+      D: "Ciencias Económicas y de la Gestión"
+      E: "Humanidades y Ciencias Jurídicas y Sociales"
+  - date: "2023-12-03"
+    day: "domingo"
+    areas: ["B", "C"]
+    area_names:
+      B: "Ciencias Básicas"
+      C: "Ingeniería"
+  - date: "2023-12-09"
+    day: "sábado"
+    areas: ["A"]
+    note: "Área A excepto Medicina Humana"
+  - date: "2023-12-10"
+    day: "domingo"
+    areas: ["A"]
+    note: "Área A — EP Medicina Humana únicamente"
+
+# ── Segunda opción details ────────────────────────────────────────────────────
+# Source: Art. 23 + CSV observation values
+segunda_opcion:
+  active: true
+  rule: >
+    Applicants could register in one primary EP and optionally a second EP in the
+    same area. Vacancies unfilled by primera opción were assigned to those who
+    marked the EP as segunda opción, in merit order and respecting the 900-pt min.
+  observation_values:
+    - "ALCANZO VACANTE PRIMERA OPCIÓN"
+    - "ALCANZO VACANTE SEGUNDA OPCIÓN"
+  csv_count: 303                     # Rows with SEGUNDA OPCIÓN in observation field
+
+# ── CSV stats ─────────────────────────────────────────────────────────────────
+csv_stats:
+  total_rows: 28862
+  admitted: 2124
+  score_below_900: 23763
+  min_score: 0.0
+  max_score: 1704.25
+  min_admitted_score: 900.875        # Confirms 900-pt filter was strictly enforced
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  2024-I is the first stage of the 2024 admission year (Art. 3). The reglamento
+  does not explicitly state which modalities are restricted to this stage, but the
+  portal only published EBR/EBA (modality A) results — consistent with the pattern
+  established explicitly in 2025-I and 2026-I.
+
+  Exam structure differs from 2025-I onward:
+  - 25 Habilidades (13 verbal + 12 math) vs. 20 (10+10) from 2025-I
+  - 65 Conocimientos vs. 70 from 2025-I
+  - Actitudinal no-negative rule not explicitly stated (added in 2025-I)
+
+  The 900-pt minimum was strictly enforced: no applicant below 900 was admitted
+  (min admitted = 900.875 in CSV). 23,763 applicants below 900 appear in the
+  portal results but were ineligible for admission.
+
+  Segunda opción was active: 303 rows show ALCANZO VACANTE SEGUNDA OPCIÓN,
+  meaning those applicants were admitted to a program they listed as their
+  second choice because their first choice had enough primera-opción applicants.

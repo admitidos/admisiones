@@ -1,0 +1,189 @@
+# Research file — UNMSM Proceso de Admisión 2026-I
+# Sources:
+#   [✓] Reglamento de Admisión 2026-I UNMSM.pdf (official, authoritative)
+#   [~] News sources: Infobae, Lumbreras — corroborated, not primary
+#   [✓] CSV data: 26,518 rows, 2,772 admitted (scraped from portal)
+
+process_id: "2026-I"
+university: "UNMSM"
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+# These map directly to the Prisma Process model fields.
+flags:
+  has_areas: true                    # [✓] 5 áreas académico-profesionales (Art. 1)
+  area_count: 5
+  has_modalities: false              # [✓] Only EBR/EBA + CEPUNMSM; NO special modalities in 2026-I
+  has_min_score_filter: false        # [✓] Reglamento only says "estricto orden de mérito" (Art. 29)
+                                     #     No "puntaje mínimo = 900" stated (compare: 2024-I/II had it explicitly)
+                                     #     News sources claimed 900 was reinstated — NOT confirmed in official text
+  min_score_threshold: null          # N/A (no filter in reglamento)
+  min_score_hides_from_portal: false # [✓] Verified from CSV: 18,336 rows with score < 900 appear in portal
+  has_segunda_opcion: false          # [✓] Art. 14: "El postulante se inscribirá solamente en una EP"
+                                     #     CSV confirms: zero SEGUNDA OPCIÓN observation values
+  session_count: 1                   # Each applicant takes one exam in one sitting (no UNI-style multi-session)
+  is_partial_process: true           # [✓] Art. 3: 2026-I = first stage (EBR+CEPUNMSM only)
+                                     #     2026-II = second stage (all remaining modalities)
+                                     #     Both stages start in the same academic period: Semester 2026-I
+
+# ── Portal modality codes scraped ────────────────────────────────────────────
+portal_modality_codes: ["A"]         # Modality A = EBR/EBA (CEPUNMSM admitted through merit ranking, no exam)
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Source: Art. 20–21 and Anexo 5 of reglamento
+exam:
+  name: "Prueba General de Admisión (DECO®)"
+  total_questions: 100
+  duration_hours: 3
+
+  sections:
+    actitudinal:
+      count: 10
+      purpose: "Competencias profesionales transversales"
+      no_negative_score: true        # [✓] Art. 28: "no tendrá puntaje negativo o en contra"
+    habilidades:
+      count: 20
+      breakdown:
+        verbal: 10                   # Comprensión lectora
+        logico_matematica: 10
+    conocimientos:
+      count: 70
+      note: "Distribución por área según Anexo 5"
+
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+    actitudinal_can_be_negative: false
+
+  # Structural change note (useful for cross-process comparison):
+  # 2024-I:  25H + 65C + 10A (3 sections)
+  # 2024-II: 30H + 70C       (2 sections — no actitudinal)
+  # 2025-I:  20H + 70C + 10A (3 sections — actitudinal re-ordered to first)
+  # 2025-II: 20H + 70C + 10A (same)
+  # 2026-I:  20H + 70C + 10A (same — structure stabilized since 2025-I)
+
+# ── Jornadas (exam days per area) ─────────────────────────────────────────────
+# Source: Anexo 2 (Cronograma) of reglamento
+# Each applicant attends ONE jornada based on their area.
+jornadas:
+  - date: "2025-09-13"
+    day: "sábado"
+    areas: ["D", "E"]
+    area_names:
+      D: "Ciencias Económicas y de la Gestión"
+      E: "Humanidades y Ciencias Jurídicas y Sociales"
+  - date: "2025-09-14"
+    day: "domingo"
+    areas: ["B", "C"]
+    area_names:
+      B: "Ciencias Básicas"
+      C: "Ingeniería"
+  - date: "2025-09-20"
+    day: "sábado"
+    areas: ["A"]
+    note: "Toda el Área A EXCEPTO Medicina Humana"
+  - date: "2025-09-21"
+    day: "domingo"
+    areas: ["A"]
+    note: "Área A — EP Medicina Humana únicamente"
+
+# ── Vacancies (EBR/EBA, from Anexo 1) ─────────────────────────────────────────
+# Only EBR/EBA modality vacancies shown; CEPUNMSM vacancies are separate.
+# Lima campus only unless noted.
+vacancies_ebr_eba:
+  area_A:
+    total_lima: 401
+    programs:
+      "01.1 Medicina Humana": 55
+      "01.2 Obstetricia": 44
+      "01.3 Enfermería": 46
+      "01.4.1 Tecnología Médica - Lab. Clínico": 17
+      "01.4.2 Tecnología Médica - Terapia Física": 17
+      "01.4.3 Tecnología Médica - Radiología": 17
+      "01.4.4 Tecnología Médica - Terapia Ocupacional": 17
+      "01.5 Nutrición": 24
+      "04.1 Farmacia y Bioquímica": 29
+      "04.2 Ciencia de los Alimentos": 10
+      "04.3 Toxicología": 11
+      "05.1 Odontología": 25
+      "08.1 Medicina Veterinaria": 20
+      "18.1 Psicología": 48
+      "18.2 Psicología Organizacional": 21
+  area_B:
+    total_lima: 325
+  area_C:
+    total_lima: 612
+  area_D:
+    total_lima: 663
+    total_sjl: 109              # San Juan de Lurigancho campus
+    total_huaral: 61
+    total_all: 833
+  area_E:
+    total_lima: 600
+
+# ── Min score rule history (cross-process, for context) ───────────────────────
+min_score_history:
+  "2024-I":
+    rule: "puntaje mínimo = 900 pts"
+    source: "Art. 33 del reglamento"
+    confirmed: true
+  "2024-II":
+    rule: "puntaje mínimo = 900 pts"
+    source: "reglamento"
+    confirmed: true
+  "2025-I":
+    rule: "puntaje aprobatorio"
+    source: "reglamento (sección calificación)"
+    note: "No specific threshold; implies any non-negative total"
+    confirmed: true
+  "2025-II":
+    rule: "puntaje positivo"
+    source: "reglamento"
+    note: "Explicitly positive (> 0)"
+    confirmed: true
+  "2026-I":
+    rule: "estricto orden de mérito (no qualifier)"
+    source: "Art. 29 del reglamento"
+    note: "No minimum score stated. News sources reported 900 reinstated — unconfirmed."
+    confirmed: false
+
+# ── Segunda opción history (cross-process, for context) ───────────────────────
+segunda_opcion_history:
+  "2024-I":
+    active: true
+    rule: "Postulante puede inscribirse en 2 EPs de la misma área"
+    source: "Art. 23 del reglamento"
+    observation_values: ["ALCANZO VACANTE PRIMERA OPCIÓN", "ALCANZO VACANTE SEGUNDA OPCIÓN"]
+  "2024-II":
+    active: true
+    source: "reglamento"
+    observation_values: ["ALCANZO VACANTE PRIMERA OPCIÓN", "ALCANZO VACANTE SEGUNDA OPCIÓN"]
+  "2025-I":
+    active: false
+  "2025-II":
+    active: false
+  "2026-I":
+    active: false
+    source: "Art. 14: 'El postulante se inscribirá solamente en una Escuela Profesional'"
+    csv_confirmed: true            # Zero SEGUNDA OPCIÓN observations in scraped data
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  2026-I is the FIRST STAGE of the 2026 admission year (Art. 3).
+  It covers only EBR/EBA and Centro Preuniversitario de la UNMSM.
+  All other modalities (C, D, E, F, G, H, I, J, M, N, O) are included in
+  the separate 2026-II process. Both stages begin classes in Semester 2026-I.
+
+  The exam structure (20H + 70C + 10A = 100) has been stable since 2025-I.
+  2024-I used a different structure (25H + 65C + 10A) and 2024-II dropped
+  actitudinal entirely (30H + 70C = 100).
+
+  The 900-point minimum score was explicit in 2024-I and 2024-II reglamentos.
+  It was replaced by "puntaje aprobatorio" in 2025-I and "puntaje positivo"
+  in 2025-II. For 2026-I the reglamento simply says "estricto orden de mérito"
+  with no qualifier, suggesting the threshold was not reinstated officially
+  despite what some news sources reported.
+
+  The portal uses the new (2026-I+) format: names and programs are Base64-encoded
+  in data-auth attributes, admitted rows have class="table-success", observation
+  value is "ALCANZÓ VACANTE" (with accent, unlike older "ALCANZO VACANTE").

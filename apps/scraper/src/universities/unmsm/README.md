@@ -276,12 +276,15 @@ Scores have not always been on the same scale. UNMSM has changed the exam format
 
 Known values from the portal (raw strings, keep as-is in CSV):
 
-| Raw value | Meaning |
-|---|---|
-| `ALCANZO VACANTE` | Admitted |
-| (blank / `&nbsp;`) | Not admitted (scored below cutoff) |
-| `AUSENTE` | Absent (did not take the exam) |
-| `INHABILITADO` | Disqualified |
+| Raw value | Meaning | Format |
+|---|---|---|
+| `ALCANZÓ VACANTE` | Admitted | 2026-I+ (accented) |
+| `ALCANZO VACANTE` | Admitted | Pre-2026 (no accent) |
+| (blank) | Not admitted (scored below cutoff) | all |
+| `AUSENTE` | Absent (did not take the exam) | all |
+| `INHABILITADO` | Disqualified | unconfirmed |
+
+> Map to the `status` enum at seed time, not during scraping. Both spellings must map to `admitted`.
 
 ⚠️ Confirm whether other observation values exist (e.g., annulled exams). Parse as a raw string and map to the `status` enum at load time, not during scraping.
 

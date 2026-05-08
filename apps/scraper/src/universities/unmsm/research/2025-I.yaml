@@ -1,0 +1,103 @@
+# Research file — UNMSM Proceso de Admisión 2025-I
+# Sources:
+#   [✓] Reglamento de Admisión 2025-I UNMSM.pdf (official, authoritative)
+#   [✓] CSV data: 28,665 rows, 2,553 admitted (scraped from portal)
+
+process_id: "2025-I"
+university: "UNMSM"
+
+# ── Flags ────────────────────────────────────────────────────────────────────
+flags:
+  has_areas: true
+  area_count: 5
+  has_modalities: false              # [✓] Art. 3: "solo EBR, EBA y Centro Preuniversitario"
+  has_min_score_filter: false        # [✓] Changed from 900 to "puntaje aprobatorio" (any positive score)
+  min_score_threshold: null          # No specific threshold; any approved score qualifies
+  min_score_hides_from_portal: false # [✓] CSV: 17,300 rows with score < 900 appear in portal
+  has_segunda_opcion: false          # [✓] Removed: Art. 14 now says "solamente en una EP"
+  session_count: 1                   # One exam per applicant
+  is_partial_process: true           # [✓] Art. 3 explicitly: first stage; 2025-II covers all modalities
+
+portal_modality_codes: ["A"]
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Source: Art. 20–21, Décima Octava disposición complementaria, Anexo 5
+# NOTE: Structure changed significantly vs. 2024-I and 2024-II
+exam:
+  name: "Prueba General de Admisión (DECO®)"
+  total_questions: 100
+  duration_hours: 3
+
+  sections:
+    actitudinal:
+      count: 10
+      purpose: "Competencias profesionales transversales"
+      no_negative_score: true        # [✓] Décima Octava: "cada pregunta actitudinal = 20 pts, no hay puntaje negativo"
+    habilidades:
+      count: 20
+      breakdown:
+        verbal: 10
+        logico_matematica: 10
+    conocimientos:
+      count: 70
+
+  scoring:
+    correct_pts: 20.0
+    incorrect_pts: -1.125
+    blank_or_multiple_pts: 0.0
+    actitudinal_can_be_negative: false
+
+  # Structural change summary vs. previous processes:
+  # 2024-I:  25H + 65C + 10A = 100 (actitudinal last, no explicit no-negative rule)
+  # 2024-II: 30H + 70C       = 100 (no actitudinal section at all)
+  # 2025-I:  10A + 20H + 70C = 100 (actitudinal FIRST, new no-negative rule explicit)
+
+# ── Jornadas ─────────────────────────────────────────────────────────────────
+# Source: Anexo 2 (Cronograma) of reglamento
+jornadas:
+  - date: "2024-10-05"
+    day: "sábado"
+    areas: ["D", "E"]
+    area_names:
+      D: "Ciencias Económicas y de la Gestión"
+      E: "Humanidades y Ciencias Jurídicas y Sociales"
+  - date: "2024-10-06"
+    day: "domingo"
+    areas: ["B", "C"]
+    area_names:
+      B: "Ciencias Básicas"
+      C: "Ingeniería"
+  - date: "2024-10-12"
+    day: "sábado"
+    areas: ["A"]
+    note: "Área A excepto Medicina Humana"
+  - date: "2024-10-13"
+    day: "domingo"
+    areas: ["A"]
+    note: "Área A — EP Medicina Humana únicamente"
+
+# ── CSV stats ─────────────────────────────────────────────────────────────────
+csv_stats:
+  total_rows: 28665
+  admitted: 2553
+  score_below_900: 17300
+  min_score: 0.0
+  max_score: 1717.37
+  min_admitted_score: 371.625        # Confirms no 900-pt floor; low-competition programs admitted below
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  2025-I is the first stage of the 2025 admission year (Art. 3, explicitly states
+  "solo EBR, EBA y Centro Preuniversitario de la UNMSM"). 2025-II covers all
+  remaining modalities.
+
+  This process introduced three key changes vs. 2024-I:
+  1. Exam sections restructured: 10A + 20H + 70C = 100 (more conocimientos, fewer
+     habilidades, actitudinal now listed first).
+  2. No-negative rule for actitudinal questions made explicit (Décima Octava
+     disposición complementaria).
+  3. Segunda opción eliminated: Art. 14 changed to "solo en una EP".
+  4. Min score 900 replaced by "puntaje aprobatorio" — CSV confirms 179 admitted
+     below 900 (low-competition programs like some EPS in Area E).
+
+  Portal used old HTML format (Website20251/, single modality A portal).
