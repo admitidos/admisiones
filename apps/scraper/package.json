@@ -10,7 +10,7 @@
     "extract:unmsm:2025-I": "tsx src/universities/unmsm/processes/2025-I.ts",
     "extract:unmsm:2025-II": "tsx src/universities/unmsm/processes/2025-II.ts",
     "extract:unmsm:2026-I": "tsx src/universities/unmsm/processes/2026-I.ts",
-    "seed": "tsx src/loaders/seed.ts",
+    "seed": "tsx --env-file=.env src/loaders/seed.ts",
     "check": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write ."
@@ -18,6 +18,7 @@
   "dependencies": {
     "@admitidos/db": "workspace:*",
     "cheerio": "^1.2.0",
+    "csv-parse": "^6.2.1",
     "csv-stringify": "^6.7.0"
   },
   "devDependencies": {
