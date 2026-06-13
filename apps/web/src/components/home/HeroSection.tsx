@@ -9,6 +9,7 @@ function processHref(p: HomeFeaturedProcess): string {
 export function HeroSection({ featuredProcess: p }: { featuredProcess: HomeFeaturedProcess }) {
   return (
     <section
+      data-testid="hero-section"
       className="relative overflow-hidden"
       aria-label="Último examen disponible"
       style={{ background: "var(--hero-bg)" }}

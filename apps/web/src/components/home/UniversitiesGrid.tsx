@@ -44,7 +44,7 @@ const ICONS: Record<string, React.ReactNode> = {
 
 export function UniversitiesGrid({ universities }: { universities: HomeUniversity[] }) {
   return (
-    <section aria-label="Universidades">
+    <section data-testid="universities-grid" aria-label="Universidades">
       <p className="mb-3 px-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
         Universidades
       </p>

@@ -287,7 +287,7 @@ export function CalendarClient({ data }: { data: CalendarData }) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-180 px-5 pb-16 pt-7 sm:px-8 sm:pb-[72px] sm:pt-8 lg:px-12 lg:pb-20 lg:pt-9">
+      <div data-testid="calendar-timeline" className="mx-auto max-w-180 px-5 pb-16 pt-7 sm:px-8 sm:pb-18 sm:pt-8 lg:px-12 lg:pb-20 lg:pt-9">
         {isEmpty ? (
           <EmptyState />
         ) : (
