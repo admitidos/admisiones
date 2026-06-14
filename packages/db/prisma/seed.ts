@@ -9,9 +9,9 @@ const prisma = new PrismaClient({ adapter });
 // ── Universities ──────────────────────────────────────────────────────────────
 
 const UNIVERSITIES = [
-  { name: "Universidad Nacional Mayor de San Marcos", acronym: "UNMSM", color: "#B91C1C", status: "active" },
-  { name: "Universidad Nacional de Ingeniería", acronym: "UNI", color: "#1D4ED8", status: "coming_soon" },
-  { name: "Universidad Nacional San Luis Gonzaga de Ica", acronym: "UNICA", color: "#15803D", status: "coming_soon" },
+  { name: "Universidad Nacional Mayor de San Marcos", shortName: "San Marcos", acronym: "UNMSM", location: "Lima", color: "#15803D", status: "active" },
+  { name: "Universidad Nacional de Ingeniería", shortName: "Ingeniería", acronym: "UNI", location: "Lima", color: "#B45309", status: "coming_soon" },
+  { name: "Universidad Nacional San Luis Gonzaga", shortName: "San Luis Gonzaga", acronym: "UNICA", location: "Ica", color: "#0369A1", status: "coming_soon" },
 ];
 
 // ── UNMSM modalities ──────────────────────────────────────────────────────────

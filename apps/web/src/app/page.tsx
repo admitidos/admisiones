@@ -23,7 +23,7 @@ export default async function HomePage() {
   return (
     <>
       <main>
-        <HeroSection featuredProcess={data.featuredProcess} />
+        {data.featuredProcess && <HeroSection featuredProcess={data.featuredProcess} />}
         <div className="mx-auto max-w-170 px-4 pb-16 sm:px-0">
           <PastExamsSection processes={data.pastProcesses} />
           <div className="mt-8">

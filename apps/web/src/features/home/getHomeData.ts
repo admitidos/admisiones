@@ -1,3 +1,8 @@
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { prisma } from "@admitidos/db";
+import { formatRate } from "@/lib/utils/formatters";
+
 export type ProcessStatus = "new" | "published" | "upcoming";
 export type UniversityStatus = "active" | "coming_soon";
 
@@ -33,99 +38,81 @@ export interface HomeUniversity {
 }
 
 export interface HomeData {
-  featuredProcess: HomeFeaturedProcess;
+  featuredProcess: HomeFeaturedProcess | null;
   pastProcesses: HomePastProcess[];
   universities: HomeUniversity[];
 }
 
-const MOCK: HomeData = {
-  featuredProcess: {
-    id: "unmsm-2026-1",
-    name: "2026-I",
-    subtitle: "Examen general · Áreas A–E · Mar 2026",
-    status: "new",
-    university: { acronym: "UNMSM", shortName: "San Marcos" },
-    stats: {
-      applicants: "26,507",
-      vacancies: "2,561",
-      programs: "73",
-      admissionRate: "9.7%",
-    },
-  },
-  pastProcesses: [
-    {
-      id: "uni-2026-1",
-      name: "Admisión 2026-I · DIAD",
-      subtitle: "3 jornadas · Feb 2026 · 6,032 postulantes",
-      date: "Feb 2026",
-      status: "published",
-      university: { acronym: "UNI", color: "#b45309" },
-    },
-    {
-      id: "unmsm-2025-2",
-      name: "Admisión 2025-II · General A",
-      subtitle: "Examen general · Mar 2025 · 26,507 postulantes",
-      date: "Mar 2025",
-      status: "published",
-      university: { acronym: "UNMSM", color: "#1c6b3a" },
-    },
-    {
-      id: "unmsm-2025-2-especial",
-      name: "Admisión 2025-II · Especial",
-      subtitle: "Modalidad especial · Mar 2025",
-      date: "Mar 2025",
-      status: "published",
-      university: { acronym: "UNMSM", color: "#1c6b3a" },
-    },
-    {
-      id: "unmsm-2025-1",
-      name: "Admisión 2025-I · EBR / EBA",
-      subtitle: "Examen general · Oct 2024 · 24,891 postulantes",
-      date: "Oct 2024",
-      status: "published",
-      university: { acronym: "UNMSM", color: "#1c6b3a" },
-    },
-    {
-      id: "unmsm-2024-2",
-      name: "Admisión 2024-II · General A",
-      subtitle: "Examen general · Mar 2024 · 25,312 postulantes",
-      date: "Mar 2024",
-      status: "published",
-      university: { acronym: "UNMSM", color: "#1c6b3a" },
-    },
-  ],
-  universities: [
-    {
-      acronym: "UNMSM",
-      name: "San Marcos",
-      location: "Lima",
-      status: "active",
-      examCount: 6,
-    },
-    {
-      acronym: "UNI",
-      name: "Ingeniería",
-      location: "Lima",
-      status: "active",
-      examCount: 2,
-    },
-    {
-      acronym: "UNSA",
-      name: "San Agustín",
-      location: "Arequipa",
-      status: "coming_soon",
-      examCount: 0,
-    },
-    {
-      acronym: "UNSAAC",
-      name: "San Antonio Abad",
-      location: "Cusco",
-      status: "coming_soon",
-      examCount: 0,
-    },
-  ],
+const intFmt = new Intl.NumberFormat("es-PE");
+const formatCount = (n: number | null | undefined): string => intFmt.format(n ?? 0);
+
+const monthYear = (d: Date): string => {
+  const s = format(d, "LLL yyyy", { locale: es }).replace(".", "");
+  return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
+const admissionRate = (applicants: number | null, admitted: number | null): string =>
+  applicants && admitted != null ? formatRate(admitted / applicants) : "—";
+
 export async function getHomeData(): Promise<HomeData> {
-  return MOCK;
+  const universities = await prisma.university.findMany({
+    orderBy: { acronym: "asc" },
+    include: { _count: { select: { processes: true } } },
+  });
+
+  const unmsm = universities.find((u) => u.acronym === "UNMSM");
+
+  // Featured + past processes come from UNMSM (the only university with data today).
+  const processes = unmsm
+    ? await prisma.process.findMany({
+        where: { universityId: unmsm.id },
+        orderBy: [{ examYear: "desc" }, { examSemester: "desc" }],
+        include: {
+          examDates: { orderBy: { date: "asc" }, take: 1 },
+          _count: { select: { programs: true } },
+        },
+      })
+    : [];
+
+  const [featured, ...past] = processes;
+  const slugId = (slug: string): string => `${unmsm!.acronym.toLowerCase()}-${slug}`;
+
+  return {
+    featuredProcess:
+      unmsm && featured
+        ? {
+            id: slugId(featured.slug),
+            name: featured.period,
+            subtitle: featured.examDates[0]
+              ? `Examen general · Áreas A–E · ${monthYear(featured.examDates[0].date)}`
+              : "Examen general · Áreas A–E",
+            status: "new",
+            university: { acronym: unmsm.acronym, shortName: unmsm.shortName ?? unmsm.name },
+            stats: {
+              applicants: formatCount(featured.totalApplicants),
+              vacancies: "—", // not in scraped data yet — pending curated source (prospecto)
+              programs: String(featured._count.programs),
+              admissionRate: admissionRate(featured.totalApplicants, featured.totalAdmitted),
+            },
+          }
+        : null,
+    pastProcesses:
+      unmsm
+        ? past.map((p) => ({
+            id: slugId(p.slug),
+            name: `Admisión ${p.period}`,
+            subtitle: `${p._count.programs} carreras · ${formatCount(p.totalApplicants)} postulantes`,
+            date: p.examDates[0] ? monthYear(p.examDates[0].date) : "",
+            status: "published",
+            university: { acronym: unmsm.acronym, color: unmsm.color },
+          }))
+        : [],
+    universities: universities.map((u) => ({
+      acronym: u.acronym,
+      name: u.shortName ?? u.name,
+      location: u.location ?? "",
+      status: u.status === "active" ? "active" : "coming_soon",
+      examCount: u._count.processes,
+    })),
+  };
 }

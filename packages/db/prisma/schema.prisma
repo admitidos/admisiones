@@ -24,11 +24,13 @@ enum AdmissionOption {
 // ── Shared spine ─────────────────────────────────────────────────────────────
 
 model University {
-  id      Int    @id @default(autoincrement())
-  name    String
-  acronym String @unique
-  color   String
-  status  String @default("active")
+  id        Int     @id @default(autoincrement())
+  name      String
+  shortName String?
+  acronym   String  @unique
+  location  String?
+  color     String
+  status    String  @default("active")
 
   careers   Career[]
   processes Process[]
