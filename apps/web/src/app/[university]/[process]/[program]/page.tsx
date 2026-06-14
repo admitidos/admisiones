@@ -35,7 +35,10 @@ export default async function ProgramPage({ params }: PageProps) {
 
   return (
     <main>
-      <section className="bg-[var(--hero-bg)] px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12">
+      <section
+        className="px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
+        style={{ background: "var(--hero-bg)" }}
+      >
         <div className="mx-auto max-w-180">
           <Breadcrumb
             light

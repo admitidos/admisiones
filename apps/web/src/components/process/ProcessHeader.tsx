@@ -18,7 +18,8 @@ export function ProcessHeader({ university, process, stats }: ProcessHeaderProps
   return (
     <section
       data-testid="process-header"
-      className="bg-[var(--hero-bg)] px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
+      className="px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
+      style={{ background: "var(--hero-bg)" }}
     >
       <div className="mx-auto max-w-180">
         <Breadcrumb

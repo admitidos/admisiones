@@ -79,7 +79,8 @@ export function ScoreHero({
   return (
     <section
       data-testid="score-hero"
-      className="bg-[var(--hero-bg)] px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
+      className="px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
+      style={{ background: "var(--hero-bg)" }}
     >
       <div className="mx-auto max-w-180">
         <Breadcrumb
