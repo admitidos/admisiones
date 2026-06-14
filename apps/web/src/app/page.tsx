@@ -6,11 +6,11 @@ import { UniversitiesGrid } from "@/components/home/UniversitiesGrid";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "admitidos.pe — Resultados de admisión universitaria",
+  title: "admisiones — Resultados de admisión universitaria",
   description:
     "Consulta tu resultado de admisión en universidades públicas del Perú. No solo el puntaje — qué significa y a qué otras carreras habrías ingresado.",
   openGraph: {
-    title: "admitidos.pe — Resultados de admisión universitaria",
+    title: "admisiones — Resultados de admisión universitaria",
     description:
       "No solo tu puntaje — entiende qué significa y a qué otras carreras habrías ingresado.",
     type: "website",

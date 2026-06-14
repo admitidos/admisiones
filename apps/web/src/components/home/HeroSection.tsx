@@ -18,7 +18,7 @@ export function HeroSection({ featuredProcess: p }: { featuredProcess: HomeFeatu
         aria-hidden
         className="pointer-events-none absolute -right-10 top-1/2 translate-y-[-60%] select-none whitespace-nowrap font-serif text-[120px] font-bold leading-none tracking-[-0.04em] text-white/4 sm:text-[200px]"
       >
-        admitidos
+        admisiones
       </span>
 
       <div className="relative z-10 mx-auto max-w-180 px-4 pt-8 text-center sm:pt-13">

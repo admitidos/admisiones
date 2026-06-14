@@ -26,7 +26,7 @@ export const buildResultMetadata = ({
 }: ResultMetaInput): Metadata => {
   const status = admitted ? "Ingresó" : "No ingresó";
   const title = `${fullName} — ${formatScore(score)} pts — ${programName}`;
-  const description = `${status} a ${programName} en ${universityAcronym} ${processPeriod}. Puntaje: ${formatScore(score)} puntos. Consulta el contexto completo en admitidos.pe`;
+  const description = `${status} a ${programName} en ${universityAcronym} ${processPeriod}. Puntaje: ${formatScore(score)} puntos. Consulta el contexto completo en admisiones`;
 
   return {
     title,

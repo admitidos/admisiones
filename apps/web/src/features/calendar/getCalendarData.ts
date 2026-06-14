@@ -161,7 +161,7 @@ const MOCK: CalendarData = {
     {
       universityId: "unsaac",
       universityLabel: "San Antonio Abad · Cusco",
-      title: "Próximamente en admitidos.pe",
+      title: "Próximamente en admisiones",
       description:
         "Estamos incorporando los exámenes de la UNSAAC. Es la universidad pública del sur del Perú con mayor número de postulantes de regiones como Apurímac, Puno y Madre de Dios.",
       badge: "~18,200 postulantes por año",

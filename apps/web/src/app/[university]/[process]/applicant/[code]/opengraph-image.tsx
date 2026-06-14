@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getResultData } from "@/features/result/getResultData";
 import { formatScore, formatPoints } from "@/lib/utils/formatters";
 
-export const alt = "Resultado de admisión — admitidos.pe";
+export const alt = "Resultado de admisión — admisiones";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -132,7 +132,7 @@ export default async function Image({
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "40px", borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "20px" }}>
           <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "16px", fontWeight: "600" }}>
-            admitidos.pe
+            admisiones
           </span>
           <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px" }}>
             Resultados con contexto · Universidades públicas del Perú

@@ -19,14 +19,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | admitidos.pe",
-    default: "admitidos.pe — Resultados de admisión universitaria",
+    template: "%s | admisiones",
+    default: "admisiones — Resultados de admisión universitaria",
   },
   description:
     "Consulta tus resultados de admisión en universidades públicas del Perú. No solo tu puntaje — qué significa y a qué otras carreras habrías ingresado.",
   metadataBase: new URL("https://admitidos.pe"),
   openGraph: {
-    siteName: "admitidos.pe",
+    siteName: "admisiones",
     locale: "es_PE",
     type: "website",
   },

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description:
     "Fechas y jornadas de los próximos exámenes de admisión en universidades públicas del Perú.",
   openGraph: {
-    title: "Próximos exámenes | admitidos.pe",
+    title: "Próximos exámenes | admisiones",
     description:
       "Prepárate a tiempo — consulta las fechas de admisión de San Marcos, UNI y más.",
     type: "website",

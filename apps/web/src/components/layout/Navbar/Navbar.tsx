@@ -9,7 +9,7 @@ export function Navbar() {
         className="mx-auto flex h-15 max-w-6xl items-center px-4 md:px-8"
       >
         <Link href="/" className="font-serif text-lg font-bold text-accent-dark">
-          admitidos<span className="text-green-500">.pe</span>
+          admisiones
         </Link>
 
         <div className="flex-1" />

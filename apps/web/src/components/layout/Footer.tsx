@@ -3,7 +3,7 @@ export function Footer() {
     <footer className="border-t border-border bg-white">
       <div className="mx-auto flex max-w-170 flex-col items-center gap-3 px-4 py-5 sm:flex-row sm:justify-between sm:px-0">
         <span className="font-serif text-[15px] font-bold text-foreground">
-          admitidos<em className="not-italic text-green-500">.pe</em>
+          admisiones
         </span>
         <div className="flex items-center gap-1.5 text-xs text-muted">
           Hecho con

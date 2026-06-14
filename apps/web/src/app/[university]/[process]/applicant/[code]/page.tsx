@@ -146,8 +146,8 @@ export default async function ResultPage({ params }: PageProps) {
               title={`${applicant.fullName} — ${program.name} ${uni.acronym} ${process.period}`}
               text={
                 result.status === "admitted"
-                  ? `¡Ingresé a ${program.name} en ${uni.acronym}! Consulta los resultados en admitidos.pe`
-                  : `Mis resultados de ${uni.acronym} ${process.period} en admitidos.pe`
+                  ? `¡Ingresé a ${program.name} en ${uni.acronym}! Consulta los resultados en admisiones`
+                  : `Mis resultados de ${uni.acronym} ${process.period} en admisiones`
               }
             />
           </div>
