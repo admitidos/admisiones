@@ -1,30 +1,51 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 
 interface ApplicantSearchProps {
-  onSearch: (query: string) => void;
   totalCount: number;
   filteredCount: number;
+  query: string;
 }
 
-export function ApplicantSearch({ onSearch, totalCount, filteredCount }: ApplicantSearchProps) {
-  const [query, setQuery] = useState("");
+export function ApplicantSearch({ totalCount, filteredCount, query }: ApplicantSearchProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState(query);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync the input when the URL query changes externally (back/forward nav).
+  useEffect(() => setValue(query), [query]);
+
+  const pushQuery = useCallback(
+    (q: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (q.trim()) params.set("q", q.trim());
+      else params.delete("q");
+      params.delete("page"); // reset to the first page on a new search
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams],
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setQuery(value);
-      onSearch(value);
+      const v = e.target.value;
+      setValue(v);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => pushQuery(v), 350);
     },
-    [onSearch],
+    [pushQuery],
   );
 
   const handleClear = useCallback(() => {
-    setQuery("");
-    onSearch("");
-  }, [onSearch]);
+    setValue("");
+    if (timer.current) clearTimeout(timer.current);
+    pushQuery("");
+  }, [pushQuery]);
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -36,13 +57,13 @@ export function ApplicantSearch({ onSearch, totalCount, filteredCount }: Applica
         <input
           data-testid="applicant-search"
           type="search"
-          value={query}
+          value={value}
           onChange={handleChange}
           placeholder="Busca por apellidos o código…"
           className="h-11 w-full rounded-sm border border-border bg-white pl-10 pr-10 text-[13px] text-foreground placeholder:text-muted focus:border-accent focus:outline-none sm:w-72"
           aria-label="Buscar postulante"
         />
-        {query && (
+        {value && (
           <button
             type="button"
             onClick={handleClear}
@@ -55,9 +76,9 @@ export function ApplicantSearch({ onSearch, totalCount, filteredCount }: Applica
       </div>
 
       <span className="text-[12px] text-muted">
-        {filteredCount === totalCount
-          ? `${totalCount} postulantes`
-          : `${filteredCount} de ${totalCount} postulantes`}
+        {query.trim() === ""
+          ? `${totalCount.toLocaleString("es-PE")} postulantes`
+          : `${filteredCount.toLocaleString("es-PE")} de ${totalCount.toLocaleString("es-PE")} postulantes`}
       </span>
     </div>
   );

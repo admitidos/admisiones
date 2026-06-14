@@ -1,8 +1,4 @@
-"use client";
-
-import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { pipe, filter } from "remeda";
 import { formatScore } from "@/lib/utils/formatters";
 import { ApplicantSearch } from "./ApplicantSearch";
 import type { ProcessApplicant } from "@/features/process/getProcessData";
@@ -27,6 +23,11 @@ interface ApplicantTableProps {
   universityAcronym: string;
   processSlug: string;
   universityColor: string;
+  total: number; // count matching the current query
+  unfilteredTotal: number; // program's full applicant count
+  page: number;
+  totalPages: number;
+  query: string;
 }
 
 export function ApplicantTable({
@@ -35,33 +36,23 @@ export function ApplicantTable({
   universityAcronym,
   processSlug,
   universityColor,
+  total,
+  unfilteredTotal,
+  page,
+  totalPages,
+  query,
 }: ApplicantTableProps) {
-  const [query, setQuery] = useState("");
-
-  const filtered = useMemo(
-    () =>
-      query.trim() === ""
-        ? applicants
-        : pipe(
-            applicants,
-            filter(
-              (a) =>
-                a.fullName.toLowerCase().includes(query.toLowerCase()) ||
-                a.code.includes(query),
-            ),
-          ),
-    [applicants, query],
-  );
-
-  const handleSearch = useCallback((q: string) => setQuery(q), []);
+  const hrefFor = (p: number): string => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (p > 1) params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `?${qs}` : "?";
+  };
 
   return (
     <div>
-      <ApplicantSearch
-        onSearch={handleSearch}
-        totalCount={applicants.length}
-        filteredCount={filtered.length}
-      />
+      <ApplicantSearch totalCount={unfilteredTotal} filteredCount={total} query={query} />
 
       <div className="mt-4 overflow-hidden rounded-lg border border-border bg-white">
         <div className="overflow-x-auto">
@@ -86,14 +77,16 @@ export function ApplicantTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filtered.length === 0 ? (
+              {applicants.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-[13px] text-muted">
-                    No se encontraron resultados para "{query}"
+                    {query
+                      ? `No se encontraron resultados para "${query}"`
+                      : "No hay postulantes para esta carrera."}
                   </td>
                 </tr>
               ) : (
-                filtered.map((applicant) => {
+                applicants.map((applicant) => {
                   const style = STATUS_STYLE[applicant.status] ?? STATUS_STYLE.not_admitted;
                   const admitted = applicant.status === "admitted";
                   return (
@@ -121,10 +114,7 @@ export function ApplicantTable({
                         <span
                           className="font-serif text-[15px] font-bold"
                           style={{
-                            color:
-                              cutoffScore !== null && admitted
-                                ? universityColor
-                                : "#a86b1a",
+                            color: cutoffScore !== null && admitted ? universityColor : "#a86b1a",
                           }}
                         >
                           {formatScore(applicant.score)}
@@ -145,7 +135,40 @@ export function ApplicantTable({
             </tbody>
           </table>
         </div>
-        {filtered.length > 0 && (
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-border px-4 py-3">
+            {page > 1 ? (
+              <Link
+                href={hrefFor(page - 1)}
+                rel="prev"
+                className="rounded-sm border border-border px-3 py-1.5 text-[12px] font-semibold text-foreground transition-colors hover:border-foreground"
+              >
+                ← Anterior
+              </Link>
+            ) : (
+              <span className="px-3 py-1.5 text-[12px] text-muted/50">← Anterior</span>
+            )}
+
+            <span className="text-[12px] text-muted">
+              Página {page} de {totalPages}
+            </span>
+
+            {page < totalPages ? (
+              <Link
+                href={hrefFor(page + 1)}
+                rel="next"
+                className="rounded-sm border border-border px-3 py-1.5 text-[12px] font-semibold text-foreground transition-colors hover:border-foreground"
+              >
+                Siguiente →
+              </Link>
+            ) : (
+              <span className="px-3 py-1.5 text-[12px] text-muted/50">Siguiente →</span>
+            )}
+          </div>
+        )}
+
+        {applicants.length > 0 && totalPages <= 1 && (
           <div className="border-t border-border px-4 py-3 text-[11px] text-muted">
             Haz clic en cualquier postulante para ver su resultado completo.
           </div>

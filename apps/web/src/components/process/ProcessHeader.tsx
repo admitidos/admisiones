@@ -48,7 +48,7 @@ export function ProcessHeader({ university, process, stats }: ProcessHeaderProps
               label: "Postulantes",
             },
             {
-              value: stats.totalVacancies.toLocaleString("es-PE"),
+              value: stats.totalVacancies > 0 ? stats.totalVacancies.toLocaleString("es-PE") : "—",
               label: "Vacantes",
             },
             {

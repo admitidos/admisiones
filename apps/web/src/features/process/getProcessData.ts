@@ -1,4 +1,4 @@
-import { pipe, sortBy } from "remeda";
+import { prisma } from "@admitidos/db";
 import type { ApplicantStatus } from "@/features/result/getResultData";
 
 export type Area = "A" | "B" | "C" | "D" | "E";
@@ -8,9 +8,7 @@ export interface ProcessProgram {
   name: string;
   campus: string;
   area: Area | null;
-  modalityCode: string;
-  modalityName: string;
-  vacancies: number;
+  vacancies: number | null;
   cutoffScore: number | null;
   totalApplicants: number;
   totalAdmitted: number;
@@ -25,10 +23,6 @@ export interface ProcessApplicant {
   status: ApplicantStatus;
 }
 
-export interface ProcessProgramWithApplicants extends ProcessProgram {
-  applicants: ProcessApplicant[];
-}
-
 export interface ProcessData {
   university: { acronym: string; name: string; color: string };
   process: { period: string; slug: string };
@@ -38,90 +32,47 @@ export interface ProcessData {
     programCount: number;
     admissionRate: number;
   };
-  modalities: { code: string; name: string }[];
-  programs: ProcessProgramWithApplicants[];
+  programs: ProcessProgram[];
 }
 
-const UNMSM_COLOR = "#1c6b3a";
+export interface ProgramData {
+  university: { acronym: string; name: string; color: string };
+  process: { period: string; slug: string };
+  program: ProcessProgram;
+}
 
-const makeApplicants = (
-  count: number,
-  cutoff: number | null,
-  baseScore: number,
-): ProcessApplicant[] =>
-  Array.from({ length: count }, (_, i) => {
-    const score = Math.round(baseScore - i * (baseScore * 0.0025));
-    const admitted = cutoff !== null && score >= cutoff;
-    return {
-      code: String(100010 + i).padStart(6, "0"),
-      fullName: MOCK_NAMES[i % MOCK_NAMES.length],
-      score,
-      rank: admitted ? i + 1 : null,
-      status: admitted ? "admitted" : "not_admitted",
-    };
-  });
+export interface PaginatedApplicants {
+  applicants: ProcessApplicant[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  query: string;
+}
 
-const MOCK_NAMES = [
-  "García López, Ana María",
-  "Quispe Mamani, Carlos Enrique",
-  "Rodríguez Torres, Lucía Fernanda",
-  "Flores Huanca, José Manuel",
-  "Mamani Condori, Rosa Elena",
-  "Torres Vega, Diego Alejandro",
-  "López Herrera, Sofía Isabel",
-  "Chávez Reyes, Andrés Eduardo",
-  "Huanca Quispe, María del Carmen",
-  "Vargas Salinas, Pablo Antonio",
-  "Condori Mamani, Claudia Beatriz",
-  "Reyes Castro, Ricardo Javier",
-];
-
-const PROGRAMS: Omit<ProcessProgramWithApplicants, "applicants">[] = [
-  { id: "prog-medicina", name: "Medicina Humana", campus: "Lima", area: "A", modalityCode: "A", modalityName: "EBR", vacancies: 60, cutoffScore: 1255, totalApplicants: 2847, totalAdmitted: 60, admissionRate: 0.021 },
-  { id: "prog-farmacia", name: "Farmacia y Bioquímica", campus: "Lima", area: "A", modalityCode: "A", modalityName: "EBR", vacancies: 45, cutoffScore: 1310, totalApplicants: 1204, totalAdmitted: 45, admissionRate: 0.037 },
-  { id: "prog-enfermeria", name: "Enfermería", campus: "Lima", area: "A", modalityCode: "A", modalityName: "EBR", vacancies: 55, cutoffScore: 1290, totalApplicants: 980, totalAdmitted: 55, admissionRate: 0.056 },
-  { id: "prog-biologia", name: "Biología", campus: "Lima", area: "A", modalityCode: "A", modalityName: "EBR", vacancies: 40, cutoffScore: 1260, totalApplicants: 742, totalAdmitted: 40, admissionRate: 0.054 },
-  { id: "prog-nutricion", name: "Nutrición", campus: "Lima", area: "A", modalityCode: "A", modalityName: "EBR", vacancies: 35, cutoffScore: 1195, totalApplicants: 614, totalAdmitted: 35, admissionRate: 0.057 },
-  { id: "prog-quimica", name: "Química", campus: "Lima", area: "B", modalityCode: "A", modalityName: "EBR", vacancies: 30, cutoffScore: 1120, totalApplicants: 480, totalAdmitted: 30, admissionRate: 0.063 },
-  { id: "prog-fisica", name: "Física", campus: "Lima", area: "B", modalityCode: "A", modalityName: "EBR", vacancies: 28, cutoffScore: 1100, totalApplicants: 396, totalAdmitted: 28, admissionRate: 0.071 },
-  { id: "prog-matematica", name: "Matemática", campus: "Lima", area: "B", modalityCode: "A", modalityName: "EBR", vacancies: 32, cutoffScore: 1085, totalApplicants: 408, totalAdmitted: 32, admissionRate: 0.078 },
-  { id: "prog-civil", name: "Ingeniería Civil", campus: "Lima", area: "C", modalityCode: "A", modalityName: "EBR", vacancies: 50, cutoffScore: 1180, totalApplicants: 1580, totalAdmitted: 50, admissionRate: 0.032 },
-  { id: "prog-sistemas", name: "Ingeniería de Sistemas", campus: "Lima", area: "C", modalityCode: "A", modalityName: "EBR", vacancies: 48, cutoffScore: 1165, totalApplicants: 1320, totalAdmitted: 48, admissionRate: 0.036 },
-  { id: "prog-industrial", name: "Ingeniería Industrial", campus: "Lima", area: "C", modalityCode: "A", modalityName: "EBR", vacancies: 46, cutoffScore: 1152, totalApplicants: 1150, totalAdmitted: 46, admissionRate: 0.040 },
-  { id: "prog-economia", name: "Economía", campus: "Lima", area: "D", modalityCode: "A", modalityName: "EBR", vacancies: 55, cutoffScore: 1130, totalApplicants: 980, totalAdmitted: 55, admissionRate: 0.056 },
-  { id: "prog-contabilidad", name: "Contabilidad", campus: "Lima", area: "D", modalityCode: "A", modalityName: "EBR", vacancies: 60, cutoffScore: 1090, totalApplicants: 870, totalAdmitted: 60, admissionRate: 0.069 },
-  { id: "prog-administracion", name: "Administración de Empresas", campus: "Lima", area: "D", modalityCode: "A", modalityName: "EBR", vacancies: 55, cutoffScore: 1095, totalApplicants: 920, totalAdmitted: 55, admissionRate: 0.060 },
-  { id: "prog-derecho", name: "Derecho", campus: "Lima", area: "E", modalityCode: "A", modalityName: "EBR", vacancies: 65, cutoffScore: 1148, totalApplicants: 1620, totalAdmitted: 65, admissionRate: 0.040 },
-  { id: "prog-comunicacion", name: "Comunicación Social", campus: "Lima", area: "E", modalityCode: "A", modalityName: "EBR", vacancies: 45, cutoffScore: 1112, totalApplicants: 820, totalAdmitted: 45, admissionRate: 0.055 },
-  { id: "prog-literatura", name: "Literatura", campus: "Lima", area: "E", modalityCode: "A", modalityName: "EBR", vacancies: 30, cutoffScore: 1080, totalApplicants: 510, totalAdmitted: 30, admissionRate: 0.059 },
-];
-
-const MOCK_PROCESS_DATA: ProcessData = {
-  university: {
-    acronym: "UNMSM",
-    name: "Universidad Nacional Mayor de San Marcos",
-    color: UNMSM_COLOR,
-  },
-  process: { period: "2026-I", slug: "2026-1" },
-  stats: {
-    totalApplicants: 26507,
-    totalVacancies: 2561,
-    programCount: PROGRAMS.length,
-    admissionRate: 0.097,
-  },
-  modalities: [
-    { code: "A", name: "Educación Básica Regular (EBR)" },
-    { code: "C", name: "Deportistas Calificados" },
-    { code: "D", name: "Traslado Externo" },
-  ],
-  programs: pipe(
-    PROGRAMS,
-    sortBy((p) => [p.area ?? "Z", p.name]),
-  ).map((p) => ({
-    ...p,
-    applicants: makeApplicants(Math.min(p.totalApplicants, 50), p.cutoffScore, p.cutoffScore ? p.cutoffScore + 200 : 1200),
-  })),
+// A Prisma program row with its career joined — mapped to the UI ProcessProgram.
+type ProgramRow = {
+  id: number;
+  campus: string;
+  vacancies: number | null;
+  cutoffScore: number | null;
+  totalApplicants: number | null;
+  totalAdmitted: number | null;
+  admissionRate: number | null;
+  career: { name: string; area: string | null };
 };
+
+const toProcessProgram = (p: ProgramRow): ProcessProgram => ({
+  id: String(p.id),
+  name: p.career.name,
+  campus: p.campus,
+  area: (p.career.area as Area | null) ?? null,
+  vacancies: p.vacancies,
+  cutoffScore: p.cutoffScore,
+  totalApplicants: p.totalApplicants ?? 0,
+  totalAdmitted: p.totalAdmitted ?? 0,
+  admissionRate: p.admissionRate,
+});
 
 export interface GetProcessDataInput {
   universityAcronym: string;
@@ -132,8 +83,135 @@ export async function getProcessData({
   universityAcronym,
   processSlug,
 }: GetProcessDataInput): Promise<ProcessData | null> {
-  if (universityAcronym.toUpperCase() === "UNMSM" && processSlug === "2026-1") {
-    return MOCK_PROCESS_DATA;
+  const university = await prisma.university.findUnique({
+    where: { acronym: universityAcronym.toUpperCase() },
+  });
+  if (!university) return null;
+
+  const process = await prisma.process.findUnique({
+    where: { universityId_slug: { universityId: university.id, slug: processSlug } },
+  });
+  if (!process) return null;
+
+  const programs = await prisma.program.findMany({
+    where: { processId: process.id },
+    include: { career: { select: { name: true, area: true } } },
+    orderBy: [{ career: { area: "asc" } }, { career: { name: "asc" } }],
+  });
+
+  const totalApplicants = process.totalApplicants ?? 0;
+  const totalAdmitted = process.totalAdmitted ?? 0;
+  const totalVacancies = programs.reduce((sum, p) => sum + (p.vacancies ?? 0), 0);
+
+  return {
+    university: { acronym: university.acronym, name: university.name, color: university.color },
+    process: { period: process.period, slug: process.slug },
+    stats: {
+      totalApplicants,
+      totalVacancies,
+      programCount: programs.length,
+      admissionRate: totalApplicants > 0 ? totalAdmitted / totalApplicants : 0,
+    },
+    programs: programs.map(toProcessProgram),
+  };
+}
+
+export interface GetProgramDataInput {
+  universityAcronym: string;
+  processSlug: string;
+  programId: string;
+}
+
+export async function getProgramData({
+  universityAcronym,
+  processSlug,
+  programId,
+}: GetProgramDataInput): Promise<ProgramData | null> {
+  const id = Number(programId);
+  if (!Number.isInteger(id)) return null;
+
+  const program = await prisma.program.findUnique({
+    where: { id },
+    include: {
+      career: { select: { name: true, area: true } },
+      process: { include: { university: true } },
+    },
+  });
+  if (!program) return null;
+
+  // Guard: the URL's university + process must match this program.
+  const { process } = program;
+  if (
+    process.slug !== processSlug ||
+    process.university.acronym.toLowerCase() !== universityAcronym.toLowerCase()
+  ) {
+    return null;
   }
-  return null;
+
+  return {
+    university: {
+      acronym: process.university.acronym,
+      name: process.university.name,
+      color: process.university.color,
+    },
+    process: { period: process.period, slug: process.slug },
+    program: toProcessProgram(program),
+  };
+}
+
+export interface GetProgramApplicantsInput {
+  programId: string;
+  page?: number;
+  pageSize?: number;
+  query?: string;
+}
+
+export async function getProgramApplicants({
+  programId,
+  page = 1,
+  pageSize = 50,
+  query = "",
+}: GetProgramApplicantsInput): Promise<PaginatedApplicants> {
+  const id = Number(programId);
+  const q = query.trim();
+  const safePage = Math.max(1, Math.floor(page));
+
+  const where = {
+    programId: id,
+    ...(q
+      ? {
+          OR: [
+            { code: { contains: q } },
+            { fullName: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+
+  const [total, rows] = await Promise.all([
+    prisma.unmsmApplicant.count({ where }),
+    prisma.unmsmApplicant.findMany({
+      where,
+      include: { result: { select: { score: true, rank: true, status: true } } },
+      // Merit order: ranked applicants first (by rank), then the rest by score.
+      orderBy: [{ result: { rank: "asc" } }, { result: { score: "desc" } }],
+      skip: (safePage - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
+
+  return {
+    applicants: rows.map((a) => ({
+      code: a.code,
+      fullName: a.fullName,
+      score: a.result?.score ?? 0,
+      rank: a.result?.rank ?? null,
+      status: (a.result?.status ?? "not_admitted") as ApplicantStatus,
+    })),
+    total,
+    page: safePage,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    query: q,
+  };
 }

@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { AreaChip } from "@/components/ui/AreaChip";
-import { ModalidadBadge } from "@/components/ui/ModalidadBadge";
 import { formatScore, formatRate } from "@/lib/utils/formatters";
-import type { ProcessProgramWithApplicants, Area } from "@/features/process/getProcessData";
+import type { ProcessProgram, Area } from "@/features/process/getProcessData";
 import { pipe, filter, groupBy, entries, sortBy } from "remeda";
 
 interface ProgramTableProps {
-  programs: ProcessProgramWithApplicants[];
+  programs: ProcessProgram[];
   selectedArea: Area | null;
   universityAcronym: string;
   processSlug: string;
@@ -63,9 +62,6 @@ export function ProgramTable({
                     <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-muted">
                       Carrera
                     </th>
-                    <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-muted">
-                      Modalidad
-                    </th>
                     <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wide text-muted">
                       Vacantes
                     </th>
@@ -91,14 +87,10 @@ export function ProgramTable({
                         </div>
                         <div className="text-[12px] text-muted">{program.campus}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <ModalidadBadge
-                          code={program.modalityCode}
-                          name={program.modalityName}
-                        />
-                      </td>
                       <td className="px-4 py-3 text-right font-serif text-[15px] font-bold text-foreground">
-                        {program.vacancies}
+                        {program.vacancies ?? (
+                          <span className="font-sans text-[13px] font-normal text-muted">—</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {program.cutoffScore !== null ? (

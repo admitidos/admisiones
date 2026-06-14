@@ -1,37 +1,54 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getProcessData } from "@/features/process/getProcessData";
+import {
+  getProgramData,
+  getProgramApplicants,
+  type Area,
+} from "@/features/process/getProcessData";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { AreaChip } from "@/components/ui/AreaChip";
-import { ModalidadBadge } from "@/components/ui/ModalidadBadge";
 import { ApplicantTable } from "@/components/process/ApplicantTable";
 import { formatScore, formatRate } from "@/lib/utils/formatters";
-import type { Area } from "@/features/process/getProcessData";
 
 interface PageProps {
   params: Promise<{ university: string; process: string; program: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { university, process: processSlug, program: programId } = await params;
-  const data = await getProcessData({ universityAcronym: university.toUpperCase(), processSlug });
-  const prog = data?.programs.find((p) => p.id === programId);
-  if (!prog || !data) return {};
-  const title = `${prog.name} — ${data.university.acronym} ${data.process.period} | Listado de postulantes`;
+  const data = await getProgramData({
+    universityAcronym: university.toUpperCase(),
+    processSlug,
+    programId,
+  });
+  if (!data) return {};
+  const { program, university: uni, process } = data;
   return {
-    title,
-    description: `${prog.totalApplicants} postulantes · Corte ${prog.cutoffScore ?? "—"} · ${prog.totalAdmitted} ingresantes`,
+    title: `${program.name} — ${uni.acronym} ${process.period} | Listado de postulantes`,
+    description: `${program.totalApplicants} postulantes · Corte ${program.cutoffScore ?? "—"} · ${program.totalAdmitted} ingresantes`,
   };
 }
 
-export default async function ProgramPage({ params }: PageProps) {
+export default async function ProgramPage({ params, searchParams }: PageProps) {
   const { university, process: processSlug, program: programId } = await params;
-  const data = await getProcessData({ universityAcronym: university.toUpperCase(), processSlug });
+  const { page: pageParam, q } = await searchParams;
 
+  const data = await getProgramData({
+    universityAcronym: university.toUpperCase(),
+    processSlug,
+    programId,
+  });
   if (!data) notFound();
 
-  const program = data.programs.find((p) => p.id === programId);
-  if (!program) notFound();
+  const { program } = data;
+  const page = Math.max(1, Number(pageParam ?? "1") || 1);
+  const paginated = await getProgramApplicants({
+    programId,
+    page,
+    pageSize: 50,
+    query: q ?? "",
+  });
 
   return (
     <main>
@@ -49,10 +66,11 @@ export default async function ProgramPage({ params }: PageProps) {
             ]}
           />
 
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {program.area && <AreaChip area={program.area as Area} size="md" />}
-            <ModalidadBadge code={program.modalityCode} name={program.modalityName} />
-          </div>
+          {program.area && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <AreaChip area={program.area as Area} size="md" />
+            </div>
+          )}
 
           <h1 className="mt-3 font-serif text-[24px] font-bold leading-tight tracking-tight text-white sm:text-[30px]">
             {program.name}
@@ -65,7 +83,7 @@ export default async function ProgramPage({ params }: PageProps) {
           <div className="mt-5 flex flex-wrap gap-4">
             {[
               { label: "Corte", value: program.cutoffScore !== null ? formatScore(program.cutoffScore) : "—" },
-              { label: "Vacantes", value: String(program.vacancies) },
+              { label: "Vacantes", value: program.vacancies !== null ? String(program.vacancies) : "—" },
               { label: "Postulantes", value: program.totalApplicants.toLocaleString("es-PE") },
               { label: "Tasa", value: program.admissionRate !== null ? formatRate(program.admissionRate) : "—" },
             ].map(({ label, value }) => (
@@ -80,11 +98,16 @@ export default async function ProgramPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-180 px-5 pb-16 pt-7 sm:px-8 lg:px-12">
         <ApplicantTable
-          applicants={program.applicants}
+          applicants={paginated.applicants}
           cutoffScore={program.cutoffScore}
           universityAcronym={data.university.acronym}
           processSlug={processSlug}
           universityColor={data.university.color}
+          total={paginated.total}
+          unfilteredTotal={program.totalApplicants}
+          page={paginated.page}
+          totalPages={paginated.totalPages}
+          query={paginated.query}
         />
       </div>
     </main>
