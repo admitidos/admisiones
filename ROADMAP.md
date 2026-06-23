@@ -72,6 +72,14 @@ Do these in order. Each one is ship-gating; nothing here is optional.
   (e.g. UNMSM 2026-II / 2027-I) entered manually, then wire `getCalendarData` to
   `University` + `ExamDate`. Until then the live page shows hand-curated dates (incl.
   UNFV/UNSAAC, which aren't in the DB). Revisit when real upcoming dates exist.
+- **TODO: per-career vacancies (`Program.vacancies`) not extracted → shows "—".** The
+  data lives in the UNMSM Reglamento PDF "Cuadro de vacantes". A PDF→markdown POC
+  (`apps/scraper/python/_bakeoff/`, dormant since 2026-05-08) compared markitdown vs
+  docling and kept markitdown — but markitdown mangles that table into one run-on line
+  (no per-career numbers); docling preserved structure better but wasn't kept. No
+  extraction code was ever written (no `.py`). Cheapest fix when wanted: hand-transcribe
+  the ~73-row table into a YAML (like `research/*.yaml`) + a small loader. Low value per
+  prime directive (scraper = 2–3×/year batch; page already degrades gracefully).
 - **Register + point the `admitidos.pe` domain** (verify availability first).
 - **Watch the result-day funnel.** Let real behaviour — not guessing — pick the next
   build. Add at most 1–2 more events only if a specific question emerges.
