@@ -26,9 +26,10 @@ isn't on the NOW list below is a distraction until that happens.
 | **Custom analytics events** (`result_viewed`, `share_click`) | ✅ done (2026-06-22) |
 | Design system (Degradado índigo tokens, fonts, hero) | ✅ in `globals.css` |
 | **Production database (Neon)** | ✅ provisioned + migrated + 136,600 applicants loaded |
-| **Deployed to Vercel** | ❌ never — needs `vercel login` (interactive, user) |
+| **Deployed to Vercel** | ✅ **LIVE at https://admitidos.pe** (2026-06-22) — all routes 200, real data, 404 empathetic |
 
-The only remaining gap to "live" is **the Vercel deploy itself** (needs your login).
+**The thin slice is live + instrumented.** Prime directive met. The work now shifts
+from shipping code to **watching real result-day traffic** (see NEXT).
 
 ---
 
