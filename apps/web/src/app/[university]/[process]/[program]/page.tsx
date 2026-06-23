@@ -56,7 +56,7 @@ export default async function ProgramPage({ params, searchParams }: PageProps) {
         className="px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:px-12"
         style={{ background: "var(--hero-bg)" }}
       >
-        <div className="mx-auto max-w-180">
+        <div className="mx-auto max-w-4xl">
           <Breadcrumb
             light
             items={[
@@ -96,7 +96,7 @@ export default async function ProgramPage({ params, searchParams }: PageProps) {
         </div>
       </section>
 
-      <div className="mx-auto max-w-180 px-5 pb-16 pt-7 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-4xl px-5 pb-16 pt-7 sm:px-8 lg:px-12">
         <ApplicantTable
           applicants={paginated.applicants}
           cutoffScore={program.cutoffScore}

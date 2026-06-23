@@ -102,7 +102,7 @@ export function ApplicantTable({
                       <td className="px-4 py-3">
                         <Link
                           href={`/${universityAcronym.toLowerCase()}/${processSlug}/applicant/${applicant.code}`}
-                          className="text-[14px] font-semibold text-foreground hover:text-accent"
+                          className="whitespace-nowrap text-[14px] font-semibold text-foreground hover:text-accent"
                         >
                           {applicant.fullName}
                         </Link>
