@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -8,6 +8,9 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Read directly (not prisma's `env()`, which throws when unset) so `prisma
+    // generate` works at build time without a DB secret. migrate/seed are only
+    // ever run with DATABASE_URL set, so they still get the real value.
+    url: process.env.DATABASE_URL ?? "",
   },
 });
