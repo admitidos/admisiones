@@ -64,6 +64,14 @@ Do these in order. Each one is ship-gating; nothing here is optional.
 
 ## NEXT — right after first real traffic (days, not weeks)
 
+- **TODO: `getCalendarData` (`/proximos-examenes`) is still MOCK.** It's the only
+  remaining mocked page (home/process/result are real). Deliberately left as curated
+  content for now — wiring it to the DB isn't possible yet because the DB has **zero
+  upcoming exam dates** (the 22 `ExamDate` rows are all historical 2023–2025; data is
+  scraped from past *results*). Making it real needs the *announced* future schedules
+  (e.g. UNMSM 2026-II / 2027-I) entered manually, then wire `getCalendarData` to
+  `University` + `ExamDate`. Until then the live page shows hand-curated dates (incl.
+  UNFV/UNSAAC, which aren't in the DB). Revisit when real upcoming dates exist.
 - **Register + point the `admitidos.pe` domain** (verify availability first).
 - **Watch the result-day funnel.** Let real behaviour — not guessing — pick the next
   build. Add at most 1–2 more events only if a specific question emerges.

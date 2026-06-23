@@ -169,6 +169,10 @@ const MOCK: CalendarData = {
   ],
 };
 
+// TODO (see ROADMAP.md › NEXT): still mock — the only non-real feature fn. Can't wire to
+// the DB yet because there are no upcoming ExamDate rows (all are historical, scraped from
+// past results). Needs announced future schedules entered manually, then query University +
+// ExamDate. Until then this is hand-curated forward-looking content.
 export async function getCalendarData(): Promise<CalendarData> {
   return MOCK;
 }
