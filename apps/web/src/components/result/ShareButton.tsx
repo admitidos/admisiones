@@ -2,17 +2,21 @@
 
 import { useState, useCallback } from "react";
 import { Share2, Check, Link } from "lucide-react";
+import { track } from "@vercel/analytics";
+import type { ApplicantStatus } from "@/features/result/getResultData";
 
 interface ShareButtonProps {
   title: string;
   text: string;
+  status: ApplicantStatus;
 }
 
-export function ShareButton({ title, text }: ShareButtonProps) {
+export function ShareButton({ title, text, status }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = useCallback(async () => {
     const url = window.location.href;
+    track("share_click", { status });
 
     if (typeof navigator.share === "function") {
       try {
@@ -26,7 +30,7 @@ export function ShareButton({ title, text }: ShareButtonProps) {
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [title, text]);
+  }, [title, text, status]);
 
   return (
     <button

@@ -14,7 +14,17 @@
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
     "lint": "eslint packages/ apps/scraper/",
-    "format": "prettier --write packages/ apps/scraper/"
+    "format": "prettier --write packages/ apps/scraper/",
+    "postinstall": "pnpm --filter @admitidos/db exec prisma generate"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "eslint": "^9",

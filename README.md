@@ -14,9 +14,10 @@ Las portales oficiales publican los resultados sin contexto: solo sabes si ingre
 
 ## Stack
 
-- **Web**: Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Web**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4
 - **DB**: PostgreSQL + Prisma 7
 - **Scraper**: Node.js + tsx
+- **Testing**: Storybook (component states) + Playwright (E2E)
 - **Package manager**: pnpm workspaces
 - **Deploy**: Vercel
 
@@ -26,10 +27,19 @@ Las portales oficiales publican los resultados sin contexto: solo sabes si ingre
 admitidos-pe/
 ├── apps/
 │   ├── web/       ← Next.js app
-│   └── scraper/   ← data extraction pipeline
+│   └── scraper/   ← data extraction pipeline (batch job, 2–3×/year)
 └── packages/
     └── db/        ← shared Prisma schema and client (@admitidos/db)
 ```
+
+## Documentation map
+
+| Doc | Purpose |
+|---|---|
+| [`PRODUCT.md`](./PRODUCT.md) | The **why** — vision, personas, emotional rules, screen specs, decisions log |
+| [`CLAUDE.md`](./CLAUDE.md) | The **how** — operational guide for Claude Code / contributors |
+| [`docs/`](./docs) | Deep reference — scraper, database, design system, screens & testing |
+| `memory/` | Evolving decisions and real-user feedback |
 
 ## Development
 
@@ -65,6 +75,19 @@ pnpm pipeline:all
 ```
 
 Intermediate JSON files are written to `apps/scraper/data/` (gitignored) and then bulk-loaded via Prisma.
+
+## Testing
+
+```bash
+# component states in isolation
+pnpm --filter web storybook
+
+# end-to-end flows
+pnpm --filter web exec playwright test
+```
+
+Stateful components have a `.stories.tsx` beside them; E2E specs live in `apps/web/e2e/`
+and target elements via `data-testid`.
 
 ## License
 

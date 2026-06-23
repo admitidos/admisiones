@@ -8,6 +8,7 @@ import { ScoreDistributionBar } from "@/components/result/ScoreDistributionBar";
 import { CutoffHistoryChart } from "@/components/result/CutoffHistoryChart";
 import { ReachableProgramsList } from "@/components/result/ReachableProgramsList";
 import { ShareButton } from "@/components/result/ShareButton";
+import { ResultViewedTracker } from "@/components/result/ResultViewedTracker";
 import { StatTile } from "@/components/ui/StatTile";
 import { formatRate } from "@/lib/utils/formatters";
 import type { Area } from "@/features/process/getProcessData";
@@ -52,6 +53,11 @@ export default async function ResultPage({ params }: PageProps) {
 
   return (
     <main>
+      <ResultViewedTracker
+        status={result.status}
+        university={uni.acronym}
+        modalidad={modality.code}
+      />
       <ScoreHero
         fullName={applicant.fullName}
         applicantCode={applicant.code}
@@ -149,6 +155,7 @@ export default async function ResultPage({ params }: PageProps) {
                   ? `¡Ingresé a ${program.name} en ${uni.acronym}! Consulta los resultados en admisiones`
                   : `Mis resultados de ${uni.acronym} ${process.period} en admisiones`
               }
+              status={result.status}
             />
           </div>
         </div>
