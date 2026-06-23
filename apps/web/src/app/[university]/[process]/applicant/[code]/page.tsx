@@ -52,7 +52,7 @@ export default async function ResultPage({ params }: PageProps) {
   const maxScore = Math.max(...computed.scoreDistribution);
 
   return (
-    <main>
+    <main className="animate-fade-in-up">
       <ResultViewedTracker
         status={result.status}
         university={uni.acronym}

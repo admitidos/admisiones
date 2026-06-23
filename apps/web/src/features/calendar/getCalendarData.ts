@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 export interface CalendarUniversity {
   id: string;
   acronym: string;
@@ -173,6 +175,8 @@ const MOCK: CalendarData = {
 // the DB yet because there are no upcoming ExamDate rows (all are historical, scraped from
 // past results). Needs announced future schedules entered manually, then query University +
 // ExamDate. Until then this is hand-curated forward-looking content.
-export async function getCalendarData(): Promise<CalendarData> {
-  return MOCK;
-}
+export const getCalendarData = unstable_cache(
+  async (): Promise<CalendarData> => MOCK,
+  ["calendar-data"],
+  { revalidate: 86400, tags: ["calendar-data"] },
+);

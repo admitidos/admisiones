@@ -1,5 +1,11 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@admitidos/db";
 import type { ApplicantStatus } from "@/features/result/getResultData";
+
+// Past admission data is immutable, so cache reads for a day to avoid re-querying Neon on
+// every navigation. `unstable_cache` keys on the stringified arguments (incl. pagination
+// + search query for the applicant list), so each distinct call is cached independently.
+const ONE_DAY = 86400;
 
 export type Area = "A" | "B" | "C" | "D" | "E";
 
@@ -79,7 +85,7 @@ export interface GetProcessDataInput {
   processSlug: string;
 }
 
-export async function getProcessData({
+async function getProcessDataUncached({
   universityAcronym,
   processSlug,
 }: GetProcessDataInput): Promise<ProcessData | null> {
@@ -116,13 +122,18 @@ export async function getProcessData({
   };
 }
 
+export const getProcessData = unstable_cache(getProcessDataUncached, ["process-data"], {
+  revalidate: ONE_DAY,
+  tags: ["process-data"],
+});
+
 export interface GetProgramDataInput {
   universityAcronym: string;
   processSlug: string;
   programId: string;
 }
 
-export async function getProgramData({
+async function getProgramDataUncached({
   universityAcronym,
   processSlug,
   programId,
@@ -159,6 +170,11 @@ export async function getProgramData({
   };
 }
 
+export const getProgramData = unstable_cache(getProgramDataUncached, ["program-data"], {
+  revalidate: ONE_DAY,
+  tags: ["program-data"],
+});
+
 export interface GetProgramApplicantsInput {
   programId: string;
   page?: number;
@@ -166,7 +182,7 @@ export interface GetProgramApplicantsInput {
   query?: string;
 }
 
-export async function getProgramApplicants({
+async function getProgramApplicantsUncached({
   programId,
   page = 1,
   pageSize = 50,
@@ -215,3 +231,9 @@ export async function getProgramApplicants({
     query: q,
   };
 }
+
+export const getProgramApplicants = unstable_cache(
+  getProgramApplicantsUncached,
+  ["program-applicants"],
+  { revalidate: ONE_DAY, tags: ["program-applicants"] },
+);

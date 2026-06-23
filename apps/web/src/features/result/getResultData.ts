@@ -1,6 +1,13 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@admitidos/db";
 import { filter, map, pipe, sortBy } from "remeda";
 import { formatTendency, type Tendency } from "@/lib/utils/formatters";
+
+// Admission results are immutable (past results never change), so cache reads for a full
+// day to avoid re-querying Neon on every navigation. `unstable_cache` keys on the
+// stringified function arguments, so each (university, process, applicant) tuple is
+// cached independently.
+const ONE_DAY = 86400;
 
 export type ApplicantStatus = "admitted" | "not_admitted" | "absent" | "disqualified";
 
@@ -57,7 +64,7 @@ export interface GetResultDataInput {
   applicantCode: string;
 }
 
-export async function getResultData({
+async function getResultDataUncached({
   universityAcronym,
   processSlug,
   applicantCode,
@@ -174,3 +181,8 @@ export async function getResultData({
     },
   };
 }
+
+export const getResultData = unstable_cache(getResultDataUncached, ["result-data"], {
+  revalidate: ONE_DAY,
+  tags: ["result-data"],
+});
