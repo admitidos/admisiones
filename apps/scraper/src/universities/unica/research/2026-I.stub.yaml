@@ -1,0 +1,97 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# STARTER STUB — UNICA (Universidad Nacional San Luis Gonzaga de Ica) Admisión 2026-I
+#
+# This is a STUB, not a finished research file. It captures only what is reasonably
+# knowable today and marks everything uncertain as TODO with the source to verify.
+# DO NOT seed from this. Promote to `2026-I.yaml` only after confirming every TODO/[~]
+# against UNICA's official reglamento + prospecto. Follow docs/university-research-playbook.md.
+#
+# Confidence markers (inline): [✓] official/CSV-verified · [~] corroborated, not primary.
+#
+# Sources located so far:
+#   [✓?] Admisión portal:        https://admision.unica.edu.pe/      (official — verify live)
+#   [✓?] Institutional site:     https://www.unica.edu.pe/           (official — prospecto/reglamento links)
+#   [✓?] Inscription system:     https://sisadmision.unica.edu.pe/inscripcion
+#   [~]  Estructura del examen 2026-I — linked from admision portal (CONFIRM exact PDF)
+#   [~]  News: Diario Correo (Chincha vacancies), formate.pe, lalupa.pe — corroborated only
+#   TODO Reglamento de Admisión 2026-I (PDF) — LOCATE on official site, then re-tag facts [✓]
+#   TODO Prospecto de Admisión 2026-I / cuadro de vacantes (PDF) — LOCATE
+#   TODO Results portal URL pattern — LOCATE (results published on institutional site +
+#        portal de transparencia within 24h of process end, per news; find the actual
+#        per-program results page the scraper will read)
+
+process_id: "2026-I"
+university: "UNICA"
+
+# ── Flags ─────────────────────────────────────────────────────────────────────
+flags:
+  has_areas: null            # [~] UNICA exams are commonly organized by áreas (A/B/C-style).
+                             #     TODO confirm count + names in reglamento. DO NOT assume.
+  area_count: null           # TODO from reglamento
+  has_modalities: null       # [~] CEPU is a distinct admission track (40% of vacancies reserved
+                             #     for CEPU students, per news). Ordinaria + CEPU + likely special
+                             #     modalities. TODO enumerate official modality list.
+  has_min_score_filter: null # TODO — does UNICA state a puntaje mínimo? Check reglamento. Unknown.
+  min_score_threshold: null  # TODO
+  min_score_hides_from_portal: null # TODO confirm from CSV once scraped
+  has_segunda_opcion: null   # TODO — unknown whether UNICA allows 2nd-choice admission
+  session_count: 1           # [~] Exam is "100 preguntas ... en un solo acto" (single sitting).
+                             #     Implies one session per applicant. TODO confirm in reglamento.
+  is_partial_process: null   # [~] Process runs as 2026-I and 2026-II (news mentions "I y II").
+                             #     TODO confirm whether 2026-I restricts modalities (partial stage).
+
+# ── Portal modality codes actually published ──────────────────────────────────
+portal_modality_codes: []    # TODO — confirm once results portal located + scraped
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# [✓?] from "Estructura del examen de admisión 2026-I" linked on admision.unica.edu.pe —
+# CONFIRM against the official PDF before tagging [✓].
+exam:
+  name: "Examen de Admisión UNICA 2026-I"   # TODO confirm official name
+  total_questions: 100       # [~] "cien (100) preguntas objetivas de opción múltiple" — confirm [✓]
+  duration_hours: 3          # [~] "dispone de tres (3) horas ... en un solo acto" — confirm [✓]
+  sections: {}               # TODO — distribution by área/subject not yet sourced. DO NOT invent.
+  scoring:
+    correct_pts: null        # TODO — points per correct answer (unknown)
+    incorrect_pts: null      # TODO — negative marking? (unknown)
+    blank_or_multiple_pts: null  # TODO
+
+# ── Jornadas (exam days) ──────────────────────────────────────────────────────
+jornadas: []                 # TODO — exam dates from the official cronograma. DO NOT invent dates.
+
+# ── Vacancies ─────────────────────────────────────────────────────────────────
+vacancies:
+  # [~] News (Diario Correo): Chincha sede = 340 vacantes ordinarias for pregrado 2026 (I+II).
+  #     This is a single corroborated figure, NOT the full cuadro de vacantes. CONFIRM + expand
+  #     from the official prospecto (per program × campus). Note multiple sedes exist (Ica, Chincha, ...).
+  sede_chincha:
+    total_ordinarias_2026: 340   # [~] news only — verify in prospecto, and split per program
+  TODO: "Full cuadro de vacantes per program × campus from official prospecto"
+
+# ── Cross-process history (build over time) ───────────────────────────────────
+min_score_history: {}        # TODO populate as processes are researched
+segunda_opcion_history: {}   # TODO
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+notes: |
+  STATUS: stub. UNICA is `coming_soon` in packages/db/prisma/seed.ts (acronym UNICA, Ica).
+
+  Confirmed-enough to start (still verify against official PDFs):
+  - Exam: 100 objective multiple-choice questions, 3 hours, single sitting ("un solo acto").
+  - CEPU is a major admission track: ~40% of vacancies reserved for CEPU students.
+  - Multiple sedes exist (at least Ica + Chincha); each sede's programs are SEPARATE Program
+    entries in the DB (campus is part of the Program unique key).
+  - Process runs in two stages per year (2026-I and 2026-II).
+  - Results published on the institutional site + portal de transparencia within 24h.
+
+  MUST verify before promoting to a real research file (do NOT invent any of these):
+  - [ ] Reglamento de Admisión 2026-I PDF — locate; then tag rule facts [✓] with Art./Anexo.
+  - [ ] Prospecto / cuadro de vacantes — full per-program × per-campus vacancies.
+  - [ ] Área system: does it exist, how many, names? (Many Peruvian univs use A/B/C/D/E.)
+  - [ ] Minimum-score rule (puntaje mínimo) — exists? threshold?
+  - [ ] Exam section breakdown + scoring (points per correct/incorrect/blank, negative marking).
+  - [ ] Segunda opción — allowed?
+  - [ ] Exam dates (cronograma) — jornadas per área/modality.
+  - [ ] Results portal URL pattern + HTML structure (column layout, admitted-detection rule,
+        whether DNI/codigo is published) — needed to write the scraper extractor.
+  - [ ] Full official modality list (ordinaria, CEPU, traslados, deportistas, etc.).
