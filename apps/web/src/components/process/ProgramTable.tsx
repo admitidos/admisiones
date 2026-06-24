@@ -82,10 +82,12 @@ export function ProgramTable({
                       className="cursor-pointer transition-colors hover:bg-border/30"
                     >
                       <td className="px-4 py-3">
-                        <div className="text-[14px] font-semibold text-foreground">
+                        <div className="whitespace-nowrap text-[14px] font-semibold text-foreground">
                           {program.name}
                         </div>
-                        <div className="text-[12px] text-muted">{program.campus}</div>
+                        <div className="whitespace-nowrap text-[12px] text-muted">
+                          {program.campus}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-right font-serif text-[15px] font-bold text-foreground">
                         {program.vacancies ?? (

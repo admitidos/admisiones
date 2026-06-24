@@ -55,7 +55,7 @@ export default async function ProcessPage({ params, searchParams }: PageProps) {
         stats={data.stats}
       />
 
-      <div className="mx-auto max-w-180 px-5 pb-16 pt-6 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-4xl px-5 pb-16 pt-6 sm:px-8 lg:px-12">
         <div className="mb-6">
           <Suspense>
             <AreaFilter availableAreas={availableAreas} selectedArea={selectedArea} />
