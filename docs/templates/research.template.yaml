@@ -1,0 +1,99 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# RESEARCH FILE TEMPLATE — one per admission process (one process_id)
+#
+# How to use: copy this file to
+#   apps/scraper/src/universities/<acronym-lower>/research/<process_id>.yaml
+# and fill every field. Follow docs/university-research-playbook.md.
+#
+# Confidence markers go INLINE on each non-obvious value:
+#   [✓] = official (reglamento/prospecto PDF) OR verified from scraped CSV — cite Art./Anexo
+#   [~] = corroborated only (news, academy blog, inference) — a lead to confirm, not truth
+#   (no marker) = trivial/derived bookkeeping
+# Unknown? Use null / "TODO" + the exact source to check. NEVER invent vacancies,
+# dates, or thresholds.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Header: sources (fill before anything else; see playbook Step 1) ──────────
+# List every source with its confidence marker and URL. Example:
+#   [✓] Reglamento de Admisión <process> <UNIV>.pdf  (URL) — official, authoritative
+#   [✓] Prospecto / Cuadro de Vacantes <process>.pdf (URL)
+#   [~] News (Infobae/El Comercio/academy) — corroborated, not primary
+#   [✓] CSV data: <N> rows, <M> admitted (scraped from <portal URL>)
+
+process_id: ""          # e.g. "2026-I" — the display form (period). One file per process.
+university: ""          # acronym, UPPERCASE, e.g. "UNICA" (lowercased = URL slug)
+
+# ── Flags ─────────────────────────────────────────────────────────────────────
+# These map to the per-process flags model (UNMSM: UnmsmProcess). See playbook Step 3.
+# Each line should carry a source + [✓]/[~].
+flags:
+  has_areas: null            # true if programs split into subject áreas. [✓] reglamento
+  area_count: null           # integer; number of áreas (null if has_areas:false)
+  has_modalities: null       # true if special modalities exist beyond ordinaria/EBR. [✓]
+  has_min_score_filter: null # true if a stated minimum admission score exists. [✓] cite Art.
+  min_score_threshold: null  # integer points, or null if no filter → Process.minScoreThreshold
+  min_score_hides_from_portal: null # do sub-threshold applicants disappear from results?
+                                    # Confirm from CSV (UNMSM: false — they still appear). [✓] CSV
+  has_segunda_opcion: null   # can an applicant be admitted to a 2nd-choice program? → hasSecondChoice
+  session_count: 1           # 1 = one exam per applicant (UNMSM). >1 = cumulative sessions (UNI).
+                             # If >1, store per-session scores in a ResultScore-style table, NOT JSON.
+  is_partial_process: null   # true if this is only the 1st stage of the year (some modalities deferred)
+
+# ── Portal modality codes actually published ──────────────────────────────────
+# Letter codes the results portal exposes for THIS process (confirm against CSV).
+# Master modality list is seeded once; this records which appeared. [✓] CSV
+portal_modality_codes: []    # e.g. ["A"] or ["A","C","D",...]
+
+# ── Exam structure ────────────────────────────────────────────────────────────
+# Source: reglamento articles + anexo with question distribution. [✓]
+# If GENERAL and SPECIAL exams differ, DELETE `exam:` and use `exam_general:` +
+# `exam_special:` instead (see UNMSM 2024-II). Each block has the same shape.
+exam:
+  name: ""                 # official exam name, e.g. "Prueba General de Admisión"
+  total_questions: null
+  duration_hours: null
+  sections:                # section name → count (+ optional breakdown). Names vary by univ.
+    habilidades:
+      count: null
+      breakdown:           # optional sub-counts
+        verbal: null
+        logico_matematica: null
+    conocimientos:
+      count: null
+    actitudinal:           # delete if this exam has no actitudinal section
+      count: null
+      no_negative_score: null   # [✓] cite the article if stated
+  scoring:
+    correct_pts: null      # points per correct answer (UNMSM: 20.0)
+    incorrect_pts: null    # negative marking per wrong answer (UNMSM: -1.125)
+    blank_or_multiple_pts: null  # usually 0.0
+
+# ── Jornadas (exam days) ──────────────────────────────────────────────────────
+# Source: cronograma anexo. One entry per exam date → one ExamDate row each.
+# Each applicant attends ONE jornada (by área/modality). [✓]
+jornadas:
+  - date: ""               # "YYYY-MM-DD"
+    day: ""                # "sábado"/"domingo" (informational)
+    areas: []              # area codes sitting that day, e.g. ["D","E"]
+    exam_type: ""          # "general" | "special" (omit if univ has no split)
+    area_names: {}         # optional map: code -> Spanish name
+    note: ""               # qualifier, e.g. "Medicina Humana únicamente"
+
+# ── Vacancies ─────────────────────────────────────────────────────────────────
+# Source: cuadro de vacantes / prospecto. Per program × campus → Program.vacancies.
+# Sede is a SEPARATE program entry. Only record numbers you can cite; skip the rest. [✓]
+# Shape is flexible — mirror the source's grouping (by área, by program, by campus).
+vacancies: {}              # e.g. { area_A: { total_lima: 401, programs: {...} } }  — or TODO
+
+# ── Cross-process history (optional but recommended) ──────────────────────────
+# Track how a rule evolved across processes; catches discrepancies (e.g. a news
+# claim contradicting the reglamento). Mark `confirmed:` true/false per entry.
+min_score_history: {}      # process_id -> { rule, source, confirmed, note }
+segunda_opcion_history: {} # process_id -> { active, rule, source, observation_values }
+
+# ── Notes ─────────────────────────────────────────────────────────────────────
+# Free-text. Summarize anomalies, structural changes vs. other processes, portal
+# format quirks, and anything a future agent must know. Spell out what is still
+# unverified.
+notes: |
+  TODO
