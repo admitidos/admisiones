@@ -1,7 +1,12 @@
+import { unstable_cache } from "next/cache";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { prisma } from "@admitidos/db";
 import { formatRate } from "@/lib/utils/formatters";
+
+// Home data changes only when a new process is scraped (2–3×/year), so cache it for a day
+// to avoid re-querying Neon on every visit.
+const ONE_DAY = 86400;
 
 export type ProcessStatus = "new" | "published" | "upcoming";
 export type UniversityStatus = "active" | "coming_soon";
@@ -54,7 +59,7 @@ const monthYear = (d: Date): string => {
 const admissionRate = (applicants: number | null, admitted: number | null): string =>
   applicants && admitted != null ? formatRate(admitted / applicants) : "—";
 
-export async function getHomeData(): Promise<HomeData> {
+async function getHomeDataUncached(): Promise<HomeData> {
   const universities = await prisma.university.findMany({
     orderBy: { acronym: "asc" },
     include: { _count: { select: { processes: true } } },
@@ -116,3 +121,8 @@ export async function getHomeData(): Promise<HomeData> {
     })),
   };
 }
+
+export const getHomeData = unstable_cache(getHomeDataUncached, ["home-data"], {
+  revalidate: ONE_DAY,
+  tags: ["home-data"],
+});

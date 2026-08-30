@@ -48,7 +48,7 @@ export default async function ProcessPage({ params, searchParams }: PageProps) {
   );
 
   return (
-    <main>
+    <main className="animate-fade-in-up">
       <ProcessHeader
         university={data.university}
         process={data.process}
