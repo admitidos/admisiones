@@ -27,6 +27,9 @@ packages/db/generated/
 apps/scraper/data/
 !apps/scraper/data/.gitkeep
 
+# scraper PDF->markdown bakeoff output (dormant POC, not code)
+apps/scraper/python/_bakeoff/
+
 # design reference files (HTML prototypes, not production code)
 apps/web/design-reference/
 
